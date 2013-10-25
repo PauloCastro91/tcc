@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        
+        <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="hibernate.connection.driver_class">com.mysql.jdbc.Driver</property>
+        <property name="hibernate.connection.url">jdbc:mysql://localhost:3306/tcc</property>
+        <property name="hibernate.connection.username">root</property>
+        <property name="hibernate.connection.password">linux</property>
+        <property name="hibernate.hbm2ddl.auto">update</property>
+        <property name="hibernate.show_sql">false</property>
+        
+        <mapping class="com.tcc.model.PssPessoa"/>
+        <mapping class="com.tcc.model.CntContato"/>
+        <mapping class="com.tcc.model.LgrLogradouro"/>
+        <mapping class="com.tcc.model.EndEndereco"/>
+        <mapping class="com.tcc.model.FunFuncionario"/>
+        <mapping class="com.tcc.model.CrgCargo"/>
+        <mapping class="com.tcc.model.PdtProduto"/>
+        <mapping class="com.tcc.model.PedPedido"/>
+        <mapping class="com.tcc.model.SttStatus"/>
+        <mapping class="com.tcc.model.PpdProdutoPedido"/>
+        <mapping class="com.tcc.model.UsrUsuario"/>
+        <mapping class="com.tcc.model.TpaTipoAcesso"/>
+    </session-factory>
+</hibernate-configuration>

@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+
+            <h:form id="formUsuario">
+                <f:metadata>
+                    <f:viewParam name="pssId" value="#{usuarioMb.pssId}" />
+                </f:metadata>
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Usuário" style="width: 990px;">
+                    <h:panelGrid>
+                        <h:outputText value="Nome Completo"/>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                            <p:inputText id="nomeCompleto" value="#{usuarioMb.nome}" size="60" style="text-transform: uppercase" disabled="#{ (usuarioMb.modo.modoTela == 1 &amp;&amp; usuarioMb.usr.usrId !=null) || usuarioMb.usr.pss.pssId != null}"/>
+                            <p:commandLink process="@this, nomeCompleto" rendered="#{usuarioMb.usr.usrId == null &amp;&amp; usuarioMb.usr.pss.pssId == null}" action="#{usuarioMb.pesquisarPss}" update="formUsuario,dialogPessoas, messages" id="botaoPesquisarPss" oncomplete="if(args.sucesso == true) {dialogPessoas.show();}">
+                                <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
+                            </p:commandLink>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="2">
+                        <h:panelGrid>
+                            <h:outputText value="Usuário:"/>
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                <p:inputText id="login" value="#{usuarioMb.usr.usrLogin}" required="true" requiredMessage="Favor informar um Usuário" disabled="#{usuarioMb.modo.modoTela == 1 &amp;&amp; usuarioMb.usr.usrId != null}"/>
+                                <p:commandLink process="@this, login" rendered="#{usuarioMb.usr.usrId == null}" action="#{usuarioMb.pesquisaUsr}" update="formUsuario,dialogUsuarios, messages" id="botaoPesquisarUSr" oncomplete="if(args.sucesso == true) {dialogUsuarios.show();}">
+                                    <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
+                                </p:commandLink>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Tipo de Acesso:"/>
+                            <p:selectOneMenu effect="bounce" value="#{usuarioMb.tpaId}" disabled="#{usuarioMb.modo.modoTela == 1}" required="true" requiredMessage="Favor informar o Tipo de Acesso do Usuário">
+                                <f:selectItem itemValue="" itemLabel=""/>
+                                <f:selectItems value="#{usuarioMb.tpaList}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Email:"/>
+                            <p:inputText id="campoEMail"  required="true" requiredMessage="Favor informar o email!!" disabled="#{usuarioMb.modo.modoTela == 1}" value="#{usuarioMb.usr.usrEmail}" size="40" maxlength="40"/>
+                        </h:panelGrid>
+
+                        <h:panelGrid>
+                            <h:outputText value="Senha Bloqueada:"/>
+                            <p:selectBooleanCheckbox value="#{usuarioMb.senhaBloqueada}" disabled="#{usuarioMb.modo.modoTela == 1}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- ************************************* BOTOES ***************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="4" id="buttons">
+                        <p:commandButton value="Novo" immediate="true" action="#{usuarioMb.novo}" rendered="#{usuarioMb.modo.modoTela ==1}" update="formUsuario"/>
+                        <p:commandButton value="Alterar" immediate="true" action="#{usuarioMb.alterar}" rendered="#{usuarioMb.modo.modoTela == 1 &amp;&amp; usuarioMb.usr.usrId != null}" update="formUsuario"/>
+                        <p:commandButton id="salvar" value="Salvar" action="#{usuarioMb.salvar}" rendered="#{usuarioMb.modo.modoTela != 1}" update="formUsuario,messages"/>
+                        <p:commandButton value="Cancelar" process="@this" actionListener="#{usuarioMb.cancelar}" update="formUsuario"/>
+                        <p:commandButton immediate="true" icon="ui-icon-folder-collapsed" value="Tela de Pessoa" action="#{usuarioMb.telaPessoa()}"/>
+                    </h:panelGrid>
+                    <p:blockUI block="panel" trigger="salvar"/>
+                    <p:blockUI block="buttons" trigger="salvar"/>
+                </p:panel>
+                <!-- ************************************************************************************************************************************************************-->
+                <!-- ************************************* DIALOG PESSOAS *******************************************************************************************************-->
+                <!-- ************************************************************************************************************************************************************-->
+                <p:dialog id="dialogPessoas" widgetVar="dialogPessoas" header="Pessoas">
+                    <h:panelGrid rendered="#{usuarioMb.pssList.size() == 0}">
+                        <h:outputText value="Nenhuma pessoa foi encontrada com esse nome, o que deseja fazer?"/>
+                        <h:panelGrid columns="2">
+                            <p:commandButton immediate="true" icon="ui-icon-folder-collapsed" value="Cadastrar uma Pessoa" action="#{usuarioMb.telaPessoa()}"/>    
+                            <p:commandButton value="Fazer uma nova busca" oncomplete="dialogPessoas.hide();" immediate="true" update="@form"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid rendered="#{usuarioMb.pssList.size() != 0}">
+                        <center>
+                            <p:dataGrid id="dataGridPessoas" var="pss" value="#{usuarioMb.pssList}" columns="1" style="width: 800px;"
+                                        paginator="true" paginatorPosition="bottom" rows="4">  
+                                <p:column>  
+                                    <p:panel id="pnl" style="width: 700px;"> 
+                                        <f:facet name="header">
+                                            <p:commandLink action="#{usuarioMb.carregarUsuario}" process="@this" update="@form" value="#{pss.pssNome.toUpperCase()} #{pss.pssSobrenome.toUpperCase()}">
+                                                <f:setPropertyActionListener value="#{pss}" target="#{usuarioMb.pss}"/>
+                                            </p:commandLink>
+                                        </f:facet>
+                                        <h:panelGrid columns="2">  
+                                            <h:outputText value="Contatos: " style="font-size: small"/>
+                                            <h:outputText value="#{pss.contatosString}" style="font-style: italic;font-size: small"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">  
+                                            <h:outputText value="Endereços: " style="font-size: small"/>
+                                            <h:outputText value="#{pss.enderecosString}"  style="font-style: italic;font-size: small"/>
+                                        </h:panelGrid>  
+                                    </p:panel>  
+                                </p:column>
+                            </p:dataGrid>
+                        </center>
+                    </h:panelGrid>
+                </p:dialog>
+                <!-- ************************************************************************************************************************************************************-->
+                <!-- ************************************* DIALOG USUARIOS *******************************************************************************************************-->
+                <!-- ************************************************************************************************************************************************************-->
+                <p:dialog id="dialogUsuarios" widgetVar="dialogUsuarios" header="Usuários">
+                    <h:panelGrid rendered="#{usuarioMb.usrList.size() != 0}">
+                        <center>
+                            <p:dataTable value="#{usuarioMb.usrList}" var="usr" paginator="true" rows="10">
+                                <p:column headerText="Usuário">
+                                    <h:outputText value="#{usr.usrLogin}"/>
+                                </p:column>
+                                <p:column headerText="Pessoa">
+                                    <h:outputText value="#{usr.pss.pssNome} #{usr.pss.pssSobrenome}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </center>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+
+</html>

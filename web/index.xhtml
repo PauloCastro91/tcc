@@ -1,0 +1,93 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="./resources/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="./resources/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        <title>M.T.D.O - Management of Traceble Delivery and Orders</title>
+        <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/primefaces_lang.js"></script>
+        <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/util.js"></script>
+        <ui:insert name="javascript"><!-- user javascript inclusion --></ui:insert>
+    </h:head>
+    <h:body>
+
+        <table class="sim" width="100%">
+            <tr>
+                <td colspan="2" align="center">
+                    <ui:insert name="cabecalho">
+                        <h:panelGrid columns="2">
+                            <p:graphicImage value="/images/mtdoBoy.png" height="120" width="180"/>
+                        </h:panelGrid>
+                    </ui:insert>
+                </td>
+            </tr>
+            <tr>
+                <td width="200px">
+                    <ui:insert name="menu">
+                        <h:form id="form">
+                            <p:menubar style="width: 990px;;">
+                                <p:submenu label="CADASTROS">  
+                                    <p:menuitem value="Cargo" action="cargo.xhtml"/>
+                                    <p:menuitem value="Pessoa" action="pessoa.xhtml"/>
+                                    <p:menuitem value="Funcionários" action="funcionario.xhtml"/>
+                                    <p:menuitem value="Produtos" action="produto.xhtml"/>
+                                    <p:menuitem value="Status" action="status.xhtml"/>
+                                    <p:menuitem value="Usuário" action="usuario.xhtml"/>
+                                </p:submenu>
+                                <p:submenu label="PEDIDOS">  
+                                    <p:menuitem value="Novo Pedido" action="pedido.xhtml"/>
+                                    <p:menuitem value="Histórico de Pedidos" action="pagina404.xhtml"/>
+                                    <p:menuitem value="Status dos Pedidos" action="statusPedido.xhtml"/>
+                                </p:submenu>
+                                <p:submenu label="LOCALIZAÇÃO DE FUNCIONÁRIOS">  
+                                    <p:menuitem value="Localizar Funcionário" action="pagina404.xhtml"/>
+                                </p:submenu>
+                                <f:facet name="options"> 
+                                    <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                        <h:outputText value="#{loginMb.usr.usrLogin}" style="font-size: x-small"/>  
+                                        <p:commandButton action="#{loginMb.deslogar}"  ajax="false" process="@this" immediate="true" value="Logout" style="height: 26px;"/>  
+                                    </h:panelGrid>
+                                </f:facet>  
+                            </p:menubar>
+                        </h:form>
+                    </ui:insert>
+                </td>
+            </tr>
+            <tr>
+                <td>
+                    <ui:insert name="conteudo">
+                    </ui:insert>
+                </td>
+
+            </tr>
+            <tr>
+                <td>
+                    <ui:insert name="fim">
+                        <center>
+
+                            <p:ajaxStatus id="ajaxStatusPanel">  
+                                <f:facet name="start">  
+                                    <h:graphicImage value="/images/loading.gif" width="25" height="25"/>  
+                                </f:facet>  
+                                <f:facet name="complete">  
+                                    <h:outputText value="" />  
+                                </f:facet>  
+                            </p:ajaxStatus>
+                        </center>
+                    </ui:insert>
+                </td>
+
+            </tr>
+        </table>
+    </h:body>
+</html>
+
+
+

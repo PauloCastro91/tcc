@@ -1,0 +1,145 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+
+            <h:form id="formFuncionario">
+                <f:metadata>
+                    <f:viewParam name="pssId" value="#{funcionarioMb.pssId}" />
+                </f:metadata>
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Funcionários" style="width: 990px;">
+                    <h:panelGrid columns="2" id="panelDesligamento">
+                        <h:panelGrid>
+                            <h:outputText value="Ativo"/>
+                            <p:selectOneMenu label="Ativo" value="#{funcionarioMb.funcionario.funAtivo}" 
+                                             disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}">
+                                <f:selectItem itemLabel="Sim" itemValue="#{true}"/>
+                                <f:selectItem itemLabel="Não" itemValue="#{false}"/>
+                                <p:ajax update="panelDesligamento"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid rendered="#{!funcionarioMb.funcionario.funAtivo}">
+                            <h:outputText value="Data de Desligamento"/>
+                            <p:calendar value="#{funcionarioMb.funcionario.funDataFim}" navigator="true" readonly="false" locale="pt_BR"
+                                        id="dataDesligamento" 
+                                        disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}"
+                                        onkeypress="return aplicarMascara(this, '##/##/####', '/');" pattern="dd/MM/yyyy"/>                        
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <h:panelGrid>
+                            <h:outputText value="Matrícula"/>
+                            <p:inputText required="true" requiredMessage="A matrícula é obrigatória!"                    
+                                         value="#{funcionarioMb.funcionario.funMatricula}" size="15" style="text-transform: uppercase"
+                                         disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Nome Completo"/>
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                <p:inputText id="nomeCompleto" value="#{funcionarioMb.nome}" size="60" style="text-transform: uppercase" disabled="#{funcionarioMb.funcionario.pss.pssId != null}"/>
+                                <p:commandLink process="@this, nomeCompleto" action="#{funcionarioMb.pesquisarPss}" update="formFuncionario,dialogPessoas, messages" id="botaoPesquisarPss" oncomplete="if(args.sucesso == true) {dialogPessoas.show();}">
+                                    <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
+                                </p:commandLink>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Data de Admissão"/>
+                            <p:calendar value="#{funcionarioMb.funcionario.funDataInicio}" navigator="true" readonly="false" locale="pt_BR"
+                                        required="true" requiredMessage="A data de admissão é obrigatória!"
+                                        onkeypress="return aplicarMascara(this, '##/##/####', '/');" pattern="dd/MM/yyyy"
+                                        disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="4">
+                        <h:panelGrid>
+                            <h:outputText value="Cargo:"/>
+                            <p:selectOneMenu  effect="bounce" value="#{funcionarioMb.crgId}" 
+                                              required="true" requiredMessage="O Cargo é obrigatório!"
+                                              style="width: 255px;"
+                                              disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}">
+                                <f:selectItem itemLabel="Cargo" itemValue=""/>
+                                <f:selectItems value="#{funcionarioMb.crgList}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="CPF"/>
+                            <p:inputMask required="true" requiredMessage="O CPF é obrigatório!"
+                                         mask="999-999-999-99" value="#{funcionarioMb.funcionario.funCPF}" 
+                                         disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="RG"/>
+                            <p:inputMask mask="99.999.999-9" value="#{funcionarioMb.funcionario.funRG}" 
+                                         required="true" requiredMessage="O RG é obrigatório!"
+                                         disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Data de Nascimento"/>
+                            <p:calendar value="#{funcionarioMb.funcionario.funDataNasc}" navigator="true" readonly="false" locale="pt_BR"
+                                        disabled="#{funcionarioMb.modo.modoTela == 1 || (funcionarioMb.funcionario.pss==null || funcionarioMb.funcionario.pss.pssId == null)}"
+                                        mindate="01/01/1930"
+                                        onkeypress="return aplicarMascara(this, '##/##/####', '/');" pattern="dd/MM/yyyy"
+                                        required="true" requiredMessage="A data de nascimento é obrigatória!"/>                        
+                        </h:panelGrid>
+                    </h:panelGrid>
+
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- ************************************* BOTOES ***************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="4" id="buttons">
+                        <p:commandButton value="Novo" immediate="true" action="#{funcionarioMb.novo}" rendered="#{funcionarioMb.modo.modoTela ==1}" update="formFuncionario"/>
+                        <p:commandButton value="Alterar" immediate="true" action="#{funcionarioMb.alterar}" rendered="#{funcionarioMb.modo.modoTela == 1 &amp;&amp; funcionarioMb.funcionario.funId != null}" update="formFuncionario"/>
+                        <p:commandButton id="salvar" value="Salvar" action="#{funcionarioMb.salvar}" rendered="#{funcionarioMb.modo.modoTela != 1}" update="formFuncionario"/>
+                        <p:commandButton value="Cancelar" process="@this" actionListener="#{funcionarioMb.cancelar}" update="formFuncionario"/>
+                        <p:commandButton immediate="true" icon="ui-icon-folder-collapsed" value="Tela de Pessoa" action="#{funcionarioMb.telaPessoa()}"/>
+                    </h:panelGrid>
+                    <p:blockUI block="panel" trigger="salvar"/>
+                    <p:blockUI block="buttons" trigger="salvar"/>
+                </p:panel>
+                <p:dialog id="dialogPessoas" widgetVar="dialogPessoas" header="Pessoas">
+                    <h:panelGrid rendered="#{funcionarioMb.pssList.size() == 0}">
+                        <h:outputText value="Nenhuma pessoa foi encontrada com esse nome, o que deseja fazer?"/>
+                        <h:panelGrid columns="2">
+                            <p:commandButton immediate="true" icon="ui-icon-folder-collapsed" value="Cadastrar uma Pessoa" action="#{funcionarioMb.telaPessoa()}"/>    
+                            <p:commandButton value="Fazer uma nova busca" oncomplete="dialogPessoas.hide();" immediate="true" update="@form"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid rendered="#{funcionarioMb.pssList.size() != 0}">
+                        <center>
+                            <p:dataGrid id="dataGridPessoas" var="pss" value="#{funcionarioMb.pssList}" columns="1" style="width: 800px;"
+                                        paginator="true" paginatorPosition="bottom" rows="4">  
+                                <p:column>  
+                                    <p:panel id="pnl" style="width: 700px;"> 
+                                        <f:facet name="header">
+                                            <p:commandLink action="#{funcionarioMb.carregarFuncionario}" update="@form" value="#{pss.pssNome.toUpperCase()} #{pss.pssSobrenome.toUpperCase()}">
+                                                <f:setPropertyActionListener value="#{pss}" target="#{funcionarioMb.pessoa}"/>
+                                            </p:commandLink>
+                                        </f:facet>
+                                        <h:panelGrid columns="2">  
+                                            <h:outputText value="Contatos: " style="font-size: small"/>
+                                            <h:outputText value="#{pss.contatosString}" style="font-style: italic;font-size: small"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">  
+                                            <h:outputText value="Endereços: " style="font-size: small"/>
+                                            <h:outputText value="#{pss.enderecosString}"  style="font-style: italic;font-size: small"/>
+                                        </h:panelGrid>  
+                                    </p:panel>  
+                                </p:column>
+                            </p:dataGrid>
+                        </center>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+</html>

@@ -1,0 +1,127 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+            <h:form id="formStatusPedido">
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Status do Pedido" style="width: 990px;">
+                    <h:panelGrid>
+                        <h:outputText value="Status"/>
+                        <p:selectOneRadio value="#{pedidoMb.sttId}" rendered="true" requiredMessage="Favor selecionar um Status">
+                            <f:selectItems value="#{pedidoMb.sttList}"/> 
+                        </p:selectOneRadio>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+
+                        <h:panelGrid>
+                            <h:outputText value="Data Início"/>
+                            <p:calendar value="#{pedidoMb.dataInicio}" pattern="MM/dd/yyyy HH:mm" effect="clip"
+                                        required="true" requiredMessage="Favor informar a Data Início"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Data Fim"/>
+                            <p:calendar value="#{pedidoMb.dataFim}" pattern="MM/dd/yyyy HH:mm" effect="clip"
+                                        required="true" requiredMessage="Favor informar a Data Fim"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <p:commandButton process="panel" id="botaoBuscar" value="Pesquisar" action="#{pedidoMb.pesquisarPedidos}" update="formStatusPedido"/>
+                    <p:blockUI block="panel" trigger="botaoBuscar"/>
+                    <br/>
+                    <p:dataTable id="dataTablePedidos" value="#{pedidoMb.pedidos}" var="ped" emptyMessage="" style="width: 800px;"
+                                 paginatorPosition="bottom" paginator="true" rendered="#{pedidoMb.pedidos != null &amp;&amp; pedidoMb.pedidos.size() > 0}">
+                        <p:column headerText="Cliente" style="width: 600px;" filterBy="#{ped.pss.pssNome} #{ped.pss.pssSobrenome}">
+                            <h:outputText value="#{ped.pss.pssNome} #{ped.pss.pssSobrenome}"/>
+                        </p:column>
+                        <p:column headerText="Valor" style="width: 100px;" filterBy="#{ped.pedValor}">
+                            <center><h:outputText value="#{ped.pedValor}"/></center>
+                        </p:column>
+                        <p:column style="width: 100px;">
+                            <p:commandLink update="@form" action="#{pedidoMb.detalharPedido}" process="@this" oncomplete="dialogPedido.show();" style="width: 26px; height: 26px;">
+                                <f:setPropertyActionListener target="#{pedidoMb.pedido}" value="#{ped}"/>
+                                <h:graphicImage value="/images/info.png" height="22" width="22"/>
+                            </p:commandLink>
+                            <p:spacer width="10"/>
+                            <p:commandLink update="@form" action="#{pedidoMb.modifcarStatus}" process="@this" oncomplete="dialogAlterarPedido.show();" style="width: 26px; height: 26px;">
+                                <f:setPropertyActionListener target="#{pedidoMb.pedido}" value="#{ped}"/>
+                                <f:setPropertyActionListener target="#{pedidoMb.sttIdNovo}" value="#{ped.stt.sttId}"/>
+                                <h:graphicImage value="/images/editar.png" height="22" width="22"/>
+                            </p:commandLink>
+                        </p:column>
+                    </p:dataTable>
+                </p:panel>
+
+                <!-- ************************************************************************************************************************************************************-->
+                <!-- *****INFORMAÇÃO DO PEDIDO *************************************************************************************************************************-->
+                <!-- ************************************************************************************************************************************************************-->
+                <p:dialog id="dialogPedido" position="center" style="position: absolute" widgetVar="dialogPedido" header="Detalhes do Pedido" width="800" hideEffect="explode" showEffect="puff">
+                    <p:panel id="panelPedido">
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Status" style="font-weight: bold"/>
+                            <h:outputText value="#{pedidoMb.pedido.stt.sttDescricao}"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Nome do Cliente:" style="font-weight: bold"/>
+                            <h:outputText value="#{pedidoMb.pedido.pss.pssNome} #{pedidoMb.pedido.pss.pssSobrenome}"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Total:" style="font-weight: bold"/>
+                            <h:outputText value="R$: #{pedidoMb.pedido.pedValor}"/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Endereço de Entrega:" style="font-weight: bold"/>
+                            <h:outputText value="#{pedidoMb.pedido.end.lgr.lgrDescricao} Nº:#{pedidoMb.pedido.end.endNumero},#{pedidoMb.pedido.end.lgr.lgrCep} #{pedidoMb.pedido.end.lgr.lgrCidade} "/>
+                        </h:panelGrid>
+                        <h:panelGrid columns="2">
+                            <h:outputText value="Contatos:" style="font-weight: bold"/>
+                            <h:outputText value="#{pedidoMb.contatoString} "/>
+                        </h:panelGrid>
+                        <br/>
+                        <h:panelGrid>
+                            <h:outputText value="Produtos Selecionados:" style="font-weight: bold;"/>
+                            <p:dataTable value="#{pedidoMb.produtosPedidos}" var="ppd" style="width: 600px;"
+                                         paginator="true" paginatorPosition="bottom">
+                                <p:column headerText="Produto" style="width: 450px;">
+                                    <h:outputText value="#{ppd.pdt.pdtDescricao}"/>
+                                </p:column>
+                                <p:column headerText="Preço" style="width: 100px;">
+                                    <h:outputText value="#{ppd.pdt.pdtValor}"/>
+                                </p:column>
+                                <p:column headerText="Qtd" style="width: 50px;">
+                                    <h:outputText value="#{ppd.ppdQuantidade}"/>
+                                </p:column>
+                            </p:dataTable>
+                        </h:panelGrid>
+                    </p:panel>
+                </p:dialog>
+                <!-- ************************************************************************************************************************************************************-->
+                <!-- *****INFORMAÇÃO DO PEDIDO *************************************************************************************************************************-->
+                <!-- ************************************************************************************************************************************************************-->
+                <p:dialog id="dialogAlterarPedido" position="center" style="position: absolute" widgetVar="dialogAlterarPedido" header="Alterar Status" width="500" hideEffect="explode" showEffect="puff">
+                    <p:messages id="messagesAlteracao"/>
+                    <p:panel id="panelAlterarPedido">
+                        <h:panelGrid>
+                            <h:outputText value="Novo Status:"/>
+                            <p:selectOneRadio value="#{pedidoMb.sttIdNovo}" required="true" requiredMessage="Favor informar qual o novo Status">
+                                <f:selectItems value="#{pedidoMb.sttListMovificar}"/>
+                            </p:selectOneRadio> 
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Funcionário:"/>
+                            <p:selectOneMenu value="#{pedidoMb.funIdNovo}" required="true" requiredMessage="Favor informar para qual funcionário o pedido está atribuído">
+                                <f:selectItem itemLabel="" itemValue=""/>
+                                <f:selectItems value="#{pedidoMb.funList}"/>
+                            </p:selectOneMenu> 
+                        </h:panelGrid>
+                        <p:commandButton action="#{pedidoMb.salvarNovoStatus}" value="Alterar Status" update="@form"
+                                         oncomplete="if(args.sucesso == true) { dialogAlterarPedido.hide(); }" />
+                    </p:panel>
+                </p:dialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

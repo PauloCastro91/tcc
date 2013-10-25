@@ -1,0 +1,84 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+            <h:form id="formProduto">
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Produto" style="width: 990px;">
+                    <h:panelGrid columns="3">
+                        <h:panelGrid>
+                            <h:outputText value="Nome"/>
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                <p:inputText id="nome" value="#{produtoMb.produto.pdtNome}" required="true" requiredMessage="O Nome é Obrigatório!!" size="61" disabled="#{produtoMb.modo.modoTela == 1 &amp;&amp; produtoMb.produto.pdtId != null}" style="text-transform: uppercase"/>
+                                <p:commandLink process="@this, nome" action="#{produtoMb.pesquisar}" update="formProduto,dialogProdutos, messages" id="botaoPesquisar" oncomplete="if(args.sucesso == true) {dialogProdutos.show();}" rendered="#{produtoMb.modo.modoTela == 1}">
+                                    <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
+                                </p:commandLink>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Valor"/>
+                            <p:spinner value="#{produtoMb.valor}" prefix="R$"  stepFactor="0.25" min="0" required="true" requiredMessage="O Valor é Obrigatório!!" disabled="#{produtoMb.modo.modoTela == 1}"/> 
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Ativo"/>
+                            <p:selectOneMenu value="#{produtoMb.produto.pdtAtivo}" disabled="#{produtoMb.modo.modoTela == 1}">
+                                <f:selectItem itemLabel="Sim" itemValue="#{true}"/>
+                                <f:selectItem itemLabel="Não" itemValue="#{false}"/>
+                            </p:selectOneMenu>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid>
+                        <h:outputText value="Descrição"/>
+                        <p:inputTextarea rows="4" cols="100" autoResize="false"
+                                         value="#{produtoMb.produto.pdtDescricao}" required="true" requiredMessage="O Descrição é Obrigatório!!" disabled="#{produtoMb.modo.modoTela == 1}" style="text-transform: uppercase"/>
+                    </h:panelGrid>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- ************************************* BOTOES ***************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="4" id="buttons">
+                        <p:commandButton value="Novo" immediate="true" action="#{produtoMb.novo}" rendered="#{produtoMb.modo.modoTela ==1}" update="panel,buttons"/>
+                        <p:commandButton value="Alterar" immediate="true" action="#{produtoMb.alterar}" rendered="#{produtoMb.modo.modoTela == 1 &amp;&amp; produtoMb.produto.pdtId != null}" update="panel,buttons"/>
+                        <p:commandButton id="salvar" value="Salvar" action="#{produtoMb.salvar}" rendered="#{produtoMb.modo.modoTela != 1}" update="panel,buttons,messages"/>
+                        <p:commandButton value="Cancelar" process="@this" actionListener="#{produtoMb.cancelar}" update="panel,buttons,messages"/>
+                    </h:panelGrid>
+                    <p:blockUI block="panel" trigger="salvar"/>
+                    <p:blockUI block="buttons" trigger="salvar"/>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- *****DIALOG DE PESQUISA DE PESSOAS *************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <p:dialog id="dialogProdutos" position="center" style="position: absolute;width: 700px;" widgetVar="dialogProdutos" header="Pesquisa de Produtos" hideEffect="explode" showEffect="puff">
+                        <p:messages id="pesquisaMessages"/>
+                        <p:dataTable value="#{produtoMb.pdtList}" var="pdt" rows="10" paginator="true" paginatorPosition="bottom" style="width: 700px;">
+                            <p:column headerText="Nome">
+                                <h:outputText value="#{pdt.pdtNome}"/>    
+                            </p:column>
+                            <p:column headerText="Valor" width="50">
+                                <h:outputText value="R$: #{pdt.pdtValor}" style="font-size: smaller"/>    
+                            </p:column>
+                            <p:column headerText="Ativo" width="30">
+                                <h:outputText value="Sim" rendered="#{pdt.pdtAtivo}"/>    
+                                <h:outputText value="Não" rendered="#{!pdt.pdtAtivo}"/>
+                            </p:column>
+                            <p:column width="20">
+                                <center>
+                                    <p:commandLink process="@this" update="@form" oncomplete="dialogProdutos.hide();">
+                                        <h:graphicImage value="/images/boxProduct.png" width="25" height="25"/>
+                                        <f:setPropertyActionListener value="#{pdt}" target="#{produtoMb.produto}"/>
+                                        <f:setPropertyActionListener value="#{pdt.pdtValor}" target="#{produtoMb.valor}"/>
+                                        <f:setPropertyActionListener value="1" target="#{produtoMb.modo.modoTela}"/>
+                                    </p:commandLink>
+                                </center>
+                            </p:column>
+                        </p:dataTable>
+                    </p:dialog>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

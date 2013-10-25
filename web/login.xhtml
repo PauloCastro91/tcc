@@ -1,0 +1,83 @@
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="./resources/css/default.css" rel="stylesheet" type="text/css" />
+        <link href="./resources/css/cssLayout.css" rel="stylesheet" type="text/css" />
+        <title>M.T.D.O - Management of Traceble Delivery and Orders</title>
+        <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/primefaces_lang.js"></script>
+        <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/util.js"></script>
+        <ui:insert name="javascript"><!-- user javascript inclusion --></ui:insert>
+    </h:head>
+
+    <h:form id="formLogin">
+
+        <h:body>
+
+            <table class="sim" width="100%">
+                <tr>
+                    <td colspan="2" align="center">
+                        <ui:insert name="cabecalho">
+                            <p:graphicImage value="/images/mtdoBoy.png" height="120" width="180"/>
+                        </ui:insert>
+                    </td>
+                </tr>
+                <tr>
+                    <td width="200px">
+                        <ui:insert name="menu">
+                            <p:messages id="messages" closable="true"/>
+                        </ui:insert>
+                    </td>
+                </tr>
+                <tr>
+                    <td>
+                        <ui:insert name="conteudo">
+                            <p:panel header="Login de Usuário" style="height: 30%;">
+
+                                <h:panelGrid columns="2">
+                                    <p:spacer width="280"/>
+                                    <h:panelGrid>
+                                        <h:outputText value="Usuário:"/>
+                                        <p:inputText id="login" value="#{loginMb.login}" size="40" maxlength="40"/>
+                                        <h:outputText value="Senha:"/>
+                                        <p:password  id="senha" value="#{loginMb.senha}"/>
+                                        <h:panelGrid columns="2">
+                                            <p:commandButton id="botaoLogar" value="Logar" icon="ui-icon-locked" action="#{loginMb.logar}" process="@this, login, senha" update="@form, messages"/>
+                                            <p:commandButton id="botaoEsqueciSenha" action="#{loginMb.resetarSenha}" value="Esqueci minha senha" icon="ui-icon-help" update="@form, messages"/>
+                                            <p:blockUI block="formLogin" trigger="botaoLogar"/>
+                                        </h:panelGrid>
+                                    </h:panelGrid>
+                                </h:panelGrid>
+                            </p:panel>
+                        </ui:insert>
+                    </td>
+
+                </tr>
+                <tr>
+                    <td>
+                        <ui:insert name="fim">
+                            <center>
+                                <h:outputText value="M.T.D.O - Management of Traceble Delivery and Orders © Todos os direitos reservados" style="font-size: xx-small"/>
+                                <p:ajaxStatus id="ajaxStatusPanel">  
+                                    <f:facet name="start">  
+                                        <h:graphicImage value="/images/loading.gif" width="25" height="25"/>  
+                                    </f:facet>  
+                                    <f:facet name="complete">  
+                                        <h:outputText value="" />  
+                                    </f:facet>  
+                                </p:ajaxStatus>
+                            </center>
+                        </ui:insert>
+                    </td>
+
+                </tr>
+            </table>
+        </h:body>
+    </h:form>
+
+
+</html>

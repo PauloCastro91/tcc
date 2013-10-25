@@ -1,0 +1,167 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+            <h:form id="formPedido">
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Pedido" style="width: 990px;">
+                    <p:focus for="nomePessoa"/>
+                    <h:panelGrid>
+                        <h:outputText value="Pessoa"/>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                            <p:inputText id="nomePessoa" value="#{pedidoMb.nomePessoa}" size="61" style="text-transform: uppercase"/>
+                            <p:commandLink process="@this, nomePessoa" action="#{pedidoMb.pesquisarPessoa}" update="formPedido,messages" id="botaoPesquisarPessoa" oncomplete="if(args.sucesso == true) {dialogPessoas.show();}">
+                                <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
+                            </p:commandLink>
+                        </h:panelGrid>
+                        <p:blockUI block="panel" trigger="botaoPesquisarPessoa"/>
+                        <p:blockUI block="buttons" trigger="botaoPesquisarPessoa"/>
+                    </h:panelGrid>
+                    <br/>
+                    <h:outputText value="Selecione os produtos que farão parte da compra:"/>
+                    <h:panelGrid columns="2">
+                        <p:spacer width="40"/>
+                        <p:pickList id="pedidoCompra" value="#{pedidoMb.produtos}" var="produto" effect="clip"  
+                                    itemValue="#{produto}" itemLabel="#{produto}" disabled="#{pedidoMb.modo.modoTela == 1}"
+                                    showSourceFilter="true" showTargetFilter="true" filterMatchMode="contains" >  
+                            <f:facet name="sourceCaption">Produtos Disponíveis</f:facet>  
+                            <f:facet name="targetCaption">Produtos Seleciondos</f:facet>  
+                            <p:ajax event="transfer" listener="#{pedidoMb.onTransfer}" process="@this, panelGridProdutosSelecionados" update="messages,panelGridProdutosSelecionados" />  
+                            <p:column>  
+                                <p:outputLabel value="#{produto}" style="font-size: x-small"/>
+                            </p:column>  
+                        </p:pickList>  
+                    </h:panelGrid>
+                    <br/>
+                    <h:panelGrid id="panelGridProdutosSelecionados">
+                        <h:outputText value="Produtos Selecionados:"/>
+                        <p:dataTable id="dataTableProdutosSelecionados" value="#{pedidoMb.produtosSelecionados}" 
+                                     editable="true" editMode="cell"
+                                     var="pdtSel" emptyMessage="" style="width: 950px;">
+                            <p:ajax event="cellEdit" listener="#{pedidoMb.onCellEdit}" update="dataTableProdutosSelecionados" />  
+                            <p:column headerText="Produto" style="width: 150px;">
+                                <h:outputText value="#{pdtSel.pdtNome}"/>
+                            </p:column>
+                            <p:column headerText="Descrição" style="width: 680px;">
+                                <h:outputText value="#{pdtSel.pdtDescricao}"/>
+                            </p:column>
+                            <p:column headerText="Preço" style="width: 70px;">
+                                <h:outputText value="#{pdtSel.pdtValor}"/>
+                            </p:column>
+                            <p:column headerText="Qnt" style="width: 50px;">  
+                                <p:cellEditor>  
+                                    <f:facet name="output"><h:outputText value="#{pdtSel.quantidade}" /></f:facet>  
+                                    <f:facet name="input"><p:inputText id="modelInput" value="#{pdtSel.quantidade}" size="2"/></f:facet>  
+                                </p:cellEditor>  
+                            </p:column>  
+                            <p:column headerText="">
+                            </p:column>
+                            <f:facet name="footer">  
+                                <h:outputText value="Valor total da compra: R$ #{pedidoMb.valorTotal}"/>
+                            </f:facet> 
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <br/>
+                    <h:panelGrid>
+                        <h:outputText value="Endereços disponíveis"/>
+                        <p:dataTable value="#{pedidoMb.endList}" var="end" emptyMessage="">
+                            <p:column width="300" headerText="Logradouro">
+                                <h:outputText value="#{end.lgr.lgrDescricao}"  style="text-transform: uppercase"/>
+                            </p:column>
+                            <p:column width="20" headerText="Nº">
+                                <h:outputText value="#{end.endNumero}" style="text-transform: uppercase"/>
+                            </p:column>
+                            <p:column headerText="Complemento">
+                                <h:outputText value="#{end.endComplemento}" style="text-transform: uppercase"/>
+                            </p:column>
+                            <p:column headerText="Cep">
+                                <h:outputText value="#{end.lgr.lgrCep}" style="text-transform: uppercase"/>
+                            </p:column>
+                            <p:column headerText="Cidade">
+                                <h:outputText value="#{end.lgr.lgrCidade}" style="text-transform: uppercase"/>
+                            </p:column> 
+                            <p:column>
+                                <p:commandLink process="@this" update=":formPedido:panelEnderecoEntrega" action="#{pedidoMb.carregarEnderecoEntrega}"  rendered="#{pedidoMb.modo.modoTela == 2}">
+                                    <h:graphicImage value="/images/mais.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{end}" target="#{pedidoMb.enderecoEntrega}"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </h:panelGrid>
+                    <h:panelGrid id="panelEnderecoEntrega">
+                        <h:outputText value="Endereço de Entrega:"/>
+                        <p:inputText id="enderecoEntrega" size="120" value="#{pedidoMb.enderecoEntregaString}" disabled="true"/>
+                    </h:panelGrid>
+                    <br/>
+                    <p:dataTable style="width: 150px;" value="#{pedidoMb.cntList}" var="cnt" emptyMessage="">
+                        <p:column headerText="Contato">
+                            <h:outputText value="#{cnt.cntDescricao}"/>
+                        </p:column>
+                    </p:dataTable>
+                    <h:panelGrid>
+                        <h:outputText value="Status"/>
+                        <p:selectOneMenu  effect="bounce" value="#{pedidoMb.sttId}" required="true" requiredMessage="O Status é obrigatório!" style="width: 255px;" disabled="#{pedidoMb.modo.modoTela == 1}">
+                            <f:selectItem itemLabel=" " itemValue=""/>
+                            <f:selectItems value="#{pedidoMb.sttList}"/>
+                        </p:selectOneMenu>
+                    </h:panelGrid>
+
+                        <!-- ************************************************************************************************************************************************************-->
+                    <!-- ************************************* BOTOES ***************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="4" id="buttons">
+                        <p:commandButton action="#{pedidoMb.comprar}" id="comprar" value="Efetuar Compra" update="panel,buttons,messages" rendered="#{pedidoMb.modo.modoTela == 2}"/>
+                        
+                        <p:commandButton id="novaCompra" process="@this" action="#{pedidoMb.novaCompra}" value="Nova Compra" update="panel,buttons,messages" rendered="#{pedidoMb.modo.modoTela == 1}"/>
+                        <p:commandButton value="Cancelar" immediate="true" actionListener="#{pedidoMb.cancelar}" update="@form"/>
+                    </h:panelGrid>
+                    <p:blockUI block="panel" trigger="comprar"/>
+                    <p:blockUI block="buttons" trigger="comprar"/>
+                </p:panel>
+                <!-- ************************************************************************************************************************************************************-->
+                <!-- ************************************* DIALOG PESSOAS ***************************************************************************************************************-->
+                <!-- ************************************************************************************************************************************************************-->
+                <p:dialog id="dialogPessoas" widgetVar="dialogPessoas" header="Pessoas">
+                    <h:panelGrid rendered="#{pedidoMb.pssList.size() == 0}">
+                        <h:outputText value="Nenhuma pessoa foi encontrada com esse nome, o que deseja fazer?"/>
+                        <br/>
+                        <h:panelGrid columns="2">
+                            <p:commandButton immediate="true" icon="ui-icon-folder-collapsed" value="Cadastrar uma Pessoa" action="#{pedidoMb.telaPessoa()}"/>    
+                            <p:commandButton value="Fazer uma nova busca" oncomplete="dialogPessoas.hide();" immediate="true" update="@form"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid rendered="#{pedidoMb.pssList.size() != 0}">
+                        <center>
+                            <p:dataGrid id="dataGridPessoas" var="pss" value="#{pedidoMb.pssList}" columns="1" style="width: 800px;"
+                                        paginator="true" paginatorPosition="bottom" rows="4">  
+                                <p:column>  
+                                    <p:panel id="pnl" style="width: 700px;"> 
+                                        <f:facet name="header">
+                                            <p:commandLink action="#{pedidoMb.carregarListasPessoa}" update="@form" value="#{pss.pssNome.toUpperCase()} #{pss.pssSobrenome.toUpperCase()}" process="@this">
+                                                <f:setPropertyActionListener value="#{pss}" target="#{pedidoMb.pss}"/>
+                                            </p:commandLink>
+                                        </f:facet>
+                                        <h:panelGrid columns="2">  
+                                            <h:outputText value="Contatos: " style="font-size: small"/>
+                                            <h:outputText value="#{pss.contatosString}" style="font-style: italic;font-size: small"/>
+                                        </h:panelGrid>
+                                        <h:panelGrid columns="2">  
+                                            <h:outputText value="Endereços: " style="font-size: small"/>
+                                            <h:outputText value="#{pss.enderecosString}"  style="font-style: italic;font-size: small"/>
+                                        </h:panelGrid>  
+                                    </p:panel>  
+                                </p:column>
+                            </p:dataGrid>
+                        </center>
+                    </h:panelGrid>
+                </p:dialog>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

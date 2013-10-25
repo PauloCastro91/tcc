@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+
+            <h:form id="formStatus">
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Status" style="width: 990px;">
+                    <h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Descrição"/> 
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                            <p:inputText id="descricao" value="#{statusMb.descricao}" size="60" style="text-transform: uppercase"/>
+                            <p:commandButton action="#{statusMb.pesquisarCargo}" rendered="#{statusMb.modo.modoTela == 1}"
+                                             process="@this,descricao" update="@form" icon="ui-icon-search"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <p:commandButton action="#{statusMb.novo}" value="Inserir" rendered="#{statusMb.modo.modoTela == 1}" update="formStatus"/>
+                        <p:commandButton action="#{statusMb.salvar}" value="Salvar" rendered="#{statusMb.modo.modoTela != 1}" update="formStatus"/>
+                        <p:commandButton action="#{statusMb.cancelar}" value="Cancelar" update="formStatus"/>
+                    </h:panelGrid>
+                    <br/>
+                    <p:dataTable value="#{statusMb.sttList}" var="stt" paginator="true" paginatorPosition="bottom" rows="7" emptyMessage="">
+                        <p:column sortBy="#{stt.sttDescricao}" width="90%">
+                            <f:facet name="header">
+                                <h:outputText value="Status"/>
+                            </f:facet>
+                            <h:outputText value="#{stt.sttDescricao}"/>
+                        </p:column>
+                        <p:column width="10%"> 
+                            <center>
+                                <p:commandLink action="#{statusMb.alterar}" update="@form" process="@this" style="width: 26px; height: 26px;" rendered="#{stt.sttAtivo}">
+                                    <h:graphicImage value="/images/editar.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{stt}" target="#{statusMb.stt}"/>
+                                    <f:setPropertyActionListener value="#{stt.sttDescricao}" target="#{statusMb.descricao}"/>
+                                </p:commandLink>
+                                <p:spacer width="15"/>
+                                <p:commandLink onclick="confirmation.show();" process="@this" style="width: 30px; height: 26px;" rendered="#{stt.sttAtivo}">
+                                    <h:graphicImage value="/images/unlocked.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{stt}" target="#{statusMb.stt}"/>
+                                </p:commandLink>
+                                <p:commandLink onclick="confirmation_ativar.show();" process="@this" style="width: 30px; height: 26px;" rendered="#{!stt.sttAtivo}">
+                                    <h:graphicImage value="/images/locked.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{stt}" target="#{statusMb.stt}"/>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog id="confirmation" message="Deseja realmente inativar esse status?"  
+                                     header="Inativar Status" severity="alert" widgetVar="confirmation">  
+
+                        <p:commandButton id="confirm" value="Sim quero inativar esse status" update="@form" oncomplete="confirmation.hide()"  
+                                         actionListener="#{statusMb.inativar}" >
+                            <f:setPropertyActionListener target="#{statusMb.stt}" value="#{stt}"/>
+                        </p:commandButton>  
+                        <p:commandButton id="decline" value="Não quero" onclick="confirmation.hide();" type="button" />   
+                    </p:confirmDialog>
+                    <p:confirmDialog id="confirmation_ativar" message="Deseja realmente ativar esse status?"  
+                                     header="Ativar Status" severity="alert" widgetVar="confirmation_ativar">  
+
+                        <p:commandButton id="confirm_ativar" value="Sim quero ativar esse status" update="@form" oncomplete="confirmation_ativar.hide()"  
+                                         actionListener="#{statusMb.ativar}" >
+                            <f:setPropertyActionListener target="#{statusMb.stt}" value="#{stt}"/>
+                        </p:commandButton>  
+                        <p:commandButton id="decline_ativar" value="Não quero" onclick="confirmation_ativar.hide();" type="button" />   
+                    </p:confirmDialog>
+
+
+                </p:panel>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+
+</html>

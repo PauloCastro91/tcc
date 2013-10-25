@@ -1,0 +1,264 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+            <h:form id="formPssPessoa">
+                <p:messages id="messages"/> 
+                <f:metadata>
+                    <f:viewParam name="tela" value="#{pessoaMb.telaOrigem}" />
+                </f:metadata>
+                <!-- ************************************************************************************************************************************************************-->
+                <!--PAINEL DE NOME E SOBRENOME DA PESSOA ************************************************************************************************************************-->
+                <!-- ************************************************************************************************************************************************************-->
+                <p:panel id="panel" header="Pessoa" style="width: 990px;">  
+                    <h:panelGrid columns="2"> 
+                        <h:panelGrid>
+                            <h:outputText value="Nome*"/>
+                            <p:inputText id="pessoaNome" value="#{pessoaMb.pessoa.pssNome}" required="true" requiredMessage="O Nome é Obrigatório!!" size="20" disabled="#{pessoaMb.modo.modoTela == 1}" style="text-transform: uppercase"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Sobrenome*"/>
+                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                <p:inputText value="#{pessoaMb.pessoa.pssSobrenome}" required="true" requiredMessage="O Sobrenome é Obrigatório!!" size="60" disabled="#{pessoaMb.modo.modoTela == 1}" style="text-transform: uppercase"/>
+                                <p:commandButton action="#{pessoaMb.limpar}" id="botaoPesquisarNome" icon="ui-icon-search" style="height: 26px;"  onclick="pesquisaPessoas.show();"
+                                                 rendered="#{pessoaMb.modo.modoTela == 1}"/>
+                            </h:panelGrid>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <br/>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- *****CONTATOS *************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="2" id="panelGridContato">
+                        <h:outputText value="Contatos:"/>
+                        <p:commandLink action="#{pessoaMb.limparContato}" update="formPssPessoa:pesquisaMessagesContatos,formPssPessoa:descricaoContato,formPssPessoa:descricaoContatoSp" id="botaoAddContato" style="height: 20px;height: 20px;" onclick="dialogContatos.show();"
+                                       process="@this" rendered="#{pessoaMb.modo.modoTela != 1}">
+                            <h:graphicImage value="/images/mais.png" height="22" width="22"/>
+                        </p:commandLink>  
+                    </h:panelGrid>
+                    <p:dataTable id="dataTableCntContato" value="#{pessoaMb.contatos}" var="cnt" emptyMessage="Nenhum contato cadastrado até o momento"
+                                 style="width: 300px;">
+                        <p:column  width="200">
+                            <f:facet name="header"><h:outputText value="Contato"/></f:facet>
+                            <h:outputText value="#{cnt.cntDescricao}"/>
+                        </p:column>
+                        <p:column width="100" rendered="#{pessoaMb.modo.modoTela != 1}" > 
+                            <center>
+                                <p:commandButton action="#{pessoaMb.excluirContato}" update="dataTableCntContato" process="@this" id="excluirContato" 
+                                                 icon="ui-icon-trash" style="width: 22px; height: 22px;">
+                                    <f:setPropertyActionListener value="#{cnt}" target="#{pessoaMb.cntContato}"/>
+                                </p:commandButton>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                    <br/>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- *****ENDERECOS *************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="2" id="panelGridEndereco">
+                        <h:outputText value="Endereços:"/>
+                        <p:commandLink id="addEndereco" style="height: 20px;height: 20px;" action="#{pessoaMb.novoEndereco}" onclick="dialogEnderecos.show();"
+                                       process="@this" update="formPssPessoa:pesquisaMessagesEndereco,panelEndereco" 
+                                       rendered="#{pessoaMb.modo.modoTela != 1}">
+                            <h:graphicImage value="/images/mais.png" height="22" width="22"/>
+                        </p:commandLink>  
+                    </h:panelGrid>
+                    <p:dataTable id="dataTableEndEndereco" value="#{pessoaMb.endList}" var="record" emptyMessage="Nenhum endereço cadastrado até o momento"
+                                 style="width: 900px;">
+                        <p:column width="300">
+                            <f:facet name="header"><h:outputText value="Logradouro"/></f:facet>
+                            <h:outputText value="#{record.lgr.lgrDescricao}"  style="text-transform: uppercase"/>
+                        </p:column>
+                        <p:column width="20">
+                            <f:facet name="header"><h:outputText value="Nº"/></f:facet>
+                            <h:outputText value="#{record.endNumero}" style="text-transform: uppercase"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Complemento"/></f:facet>
+                            <h:outputText value="#{record.endComplemento}" style="text-transform: uppercase"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Cep"/></f:facet>
+                            <h:outputText value="#{record.lgr.lgrCep}" style="text-transform: uppercase"/>
+                        </p:column>
+                        <p:column>
+                            <f:facet name="header"><h:outputText value="Cidade"/></f:facet>
+                            <h:outputText value="#{record.lgr.lgrCidade}" style="text-transform: uppercase"/>
+                        </p:column> 
+                        <p:column  rendered="#{pessoaMb.modo.modoTela != 1}" > 
+                            <center>
+                                <p:commandLink update=":formPssPessoa:pesquisaMessagesEndereco,:formPssPessoa:panelEndereco" process="@this" onclick="dialogEnderecos.show();" style="width: 26px; height: 26px;">
+                                    <f:setPropertyActionListener  value="#{record}" target="#{pessoaMb.endereco}"/>
+                                    <f:setPropertyActionListener value="#{record.lgr.lgrCep}" target="#{pessoaMb.enderecoMemoria.lgr.lgrCep}"/>
+                                    <f:setPropertyActionListener value="#{record.lgr.lgrDescricao}" target="#{pessoaMb.enderecoMemoria.lgr.lgrDescricao}"/>
+                                    <f:setPropertyActionListener value="#{record.endNumero}" target="#{pessoaMb.enderecoMemoria.endNumero}"/>
+                                    <f:setPropertyActionListener value="#{record.endComplemento}" target="#{pessoaMb.enderecoMemoria.endComplemento}"/>
+                                    <f:setPropertyActionListener value="#{record.endReferencia}" target="#{pessoaMb.enderecoMemoria.endReferencia}"/>
+                                    <f:setPropertyActionListener value="#{true}" target="#{record.selecionado}"/>
+                                    <h:graphicImage value="/images/editar.png" height="22" width="22"/>
+                                </p:commandLink>
+                                <p:spacer width="10"/>
+                                <p:commandLink onclick="confirmation.show();" process="@this" id="excluirEndereco" 
+                                               style="width: 22px; height: 22px;">
+                                    <h:graphicImage value="/images/trash-icon.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{record}" target="#{pessoaMb.endereco}"/>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog id="confirmation" message="Deseja realmente excluir esse endereço?"  
+                                     header="Excluir Endereço" severity="alert" widgetVar="confirmation">  
+
+                        <p:commandButton id="confirm" value="Sim quero excluir esse endereço" update=":formPssPessoa:dataTableEndEndereco" oncomplete="confirmation.hide()"  
+                                         process="@this" actionListener="#{pessoaMb.excluirEndereco}" />  
+                        <p:commandButton id="decline" value="Não quero" onclick="confirmation.hide()" type="button">
+                            <f:setPropertyActionListener value="#{null}" target="#{pessoaMb.endereco}"/>
+                        </p:commandButton>   
+
+                    </p:confirmDialog>
+                    <br/>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- ************************************* BOTOES ***************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <h:panelGrid columns="4" id="buttons">
+                        <p:commandButton value="Novo" immediate="true" action="#{pessoaMb.novo}" rendered="#{pessoaMb.modo.modoTela ==1}" update="panel,buttons"/>
+                        <p:commandButton value="Alterar" immediate="true" action="#{pessoaMb.alterar}" rendered="#{pessoaMb.modo.modoTela == 1 &amp;&amp; pessoaMb.pessoa.pssId != null}" update="panel,buttons"/>
+                        <p:commandButton id="salvar" value="Salvar" action="#{pessoaMb.salvar}" rendered="#{pessoaMb.modo.modoTela != 1}" update="panel,buttons,messages"/>
+                        <p:commandButton value="Cancelar" process="@this" actionListener="#{pessoaMb.cancelar}" update="panel,buttons,messages"/>
+                    </h:panelGrid>
+                    <p:blockUI block="panel" trigger="salvar"/>
+                    <p:blockUI block="buttons" trigger="salvar"/>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- *****DIALOG DE PESQUISA DE PESSOAS *************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <p:dialog id="dialogPesquisaPessoas" position="center" style="position: absolute" widgetVar="pesquisaPessoas" header="Pesquisa de Pessoas" width="700" hideEffect="explode" showEffect="puff">
+                        <p:messages id="pesquisaMessages"/>
+                        <h:panelGrid columns="2">
+                            <h:panelGrid>
+                                <h:outputText value="Nome"/>
+                                <p:inputText id="pesquisaNome" value="#{pessoaMb.pesquisaNome}" size="25" style="text-transform: uppercase"/>
+                                <p:watermark for="pesquisaNome" value="Insira o nome para a busca"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <h:outputText value="Sobrenome"/>
+                                <p:inputText id="pesquisaSobrenome" value="#{pessoaMb.pesquisaSobrenome}" size="60" style="text-transform: uppercase"/>
+                                <p:watermark for="pesquisaSobrenome" value="Insira o sobrenome para a busca"/>
+                            </h:panelGrid>
+                        </h:panelGrid> 
+                        <h:panelGrid columns="2" id="buttonsPesquisa">
+                            <p:commandButton action="#{pessoaMb.pesquisar}" 
+                                             process="@this,pesquisaNome, pesquisaSobrenome" value="Pesquisar" update="datablePesquisaPessoa,pesquisaMessages"/>
+                        </h:panelGrid>
+                        <br/>
+                        <p:dataTable id="datablePesquisaPessoa" value="#{pessoaMb.pessoas}" var="record" emptyMessage="Sem Registros para busca :("
+                                     paginator="true" rows="10" paginatorPosition="bottom">
+                            <p:column headerText="Nome">
+                                <h:outputText value="#{record.pssNome}" style="text-transform: uppercase"/>
+                            </p:column>
+                            <p:column headerText="Sobrenome">
+                                <h:outputText value="#{record.pssSobrenome}" style="text-transform: uppercase"/>
+                            </p:column>
+                            <p:column style="width: 10px;">
+                                <p:commandLink update="@form" process="@this" style="height: 20px;" id="botaoCarregarPessoa" action="#{pessoaMb.carregar}">
+                                    <h:graphicImage value="/images/mais_usuario.png" height="30" width="28"/>
+                                    <f:setPropertyActionListener value="#{record.pssId}" target="#{pessoaMb.pssId}"/>
+                                </p:commandLink>
+                            </p:column>
+                        </p:dataTable>
+                    </p:dialog>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- *****DIALOG DE CONTATOS *************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <p:dialog id="dialogContatos" position="center" style="position: absolute" widgetVar="dialogContatos" header="Contato"  width="500" hideEffect="explode" showEffect="puff">
+                        <p:messages id="pesquisaMessagesContatos"/>
+                        <p:panel id="panelGridContatoDesc">
+                            <h:outputText value="Descrição"/>
+                            <h:panelGrid columns="2">
+                                <p:inputMask mask="(99)9999-9999" value="#{pessoaMb.cntDescricao}" id="descricaoContato" rendered="#{!pessoaMb.telSp}"/>    
+                                <p:inputMask mask="(99)99999-9999" value="#{pessoaMb.cntDescricao}" id="descricaoContatoSp" rendered="#{pessoaMb.telSp}"/>   
+                                <h:panelGrid columns="2">
+                                    <p:selectBooleanCheckbox value="#{pessoaMb.telSp}">
+                                        <p:ajax listener="#{pessoaMb.verificarContato}" update="panelGridContatoDesc"/>
+                                    </p:selectBooleanCheckbox>
+                                    <h:outputText value="Telefone de São Paulo"/>
+                                </h:panelGrid>
+                                <p:watermark for="descricaoContato" value="Insira a descrição do contato"/>
+                            </h:panelGrid>
+                        </p:panel>
+                        <br/>
+                        <center>
+                            <h:panelGrid>
+                                <p:commandButton value="Salvar Contato" icon="ui-icon-plus" update="@this,pesquisaMessagesContatos,dataTableCntContato" 
+                                                 oncomplete="if(args.sucesso == true) { dialogContatos.hide(); }"
+                                                 action="#{pessoaMb.adicionarCntList}" process="@this,descricaoContato,descricaoContatoSp" rendered="#{pessoaMb.cntContato.cntId == null}"/>
+                                <p:commandButton          oncomplete="if(args.sucesso == true) { dialogContatos.hide(); }"
+                                                          value="Salvar Contato" icon="ui-icon-pencil" update="@this,pesquisaMessagesContatos" process="@this,descricaoContato" rendered="#{pessoaMb.cntContato.cntId != null}"/>
+                            </h:panelGrid>
+                        </center>
+                    </p:dialog>
+                    <!-- ************************************************************************************************************************************************************-->
+                    <!-- *****DIALOG DE ENDEREÇOS *************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
+                    <p:dialog closable="false" id="dialogEnderecos" position="center" style="position: absolute" widgetVar="dialogEnderecos" header="Endereços"  width="900" hideEffect="explode" showEffect="puff">
+                        <p:messages id="pesquisaMessagesEndereco"/>
+                        <p:panel id="panelEndereco">
+                            <h:panelGrid>
+                                <h:outputText value="Cep"/>
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                    <p:inputMask id="cepEnderecoNovo" mask="99999-999" value="#{pessoaMb.endereco.lgr.lgrCep}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:panelGrid>
+                                    <h:outputText value="Logradouro"/>
+                                    <p:inputText value="#{pessoaMb.endereco.lgr.lgrDescricao}" size="60" style="text-transform: uppercase"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Nº"/>
+                                    <p:inputText value="#{pessoaMb.endereco.endNumero}" size="7"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3">
+
+                                <h:panelGrid>
+                                    <h:outputText value="Complemento"/>
+                                    <p:inputText value="#{pessoaMb.endereco.endComplemento}" size="25" style="text-transform: uppercase"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Cidade"/>
+                                    <p:selectOneMenu>
+                                        <f:selectItem itemLabel="São José dos Campos"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Estado"/>
+                                    <p:selectOneMenu>
+                                        <f:selectItem itemLabel="São Paulo"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <h:outputText value="Referência"/>
+                                <p:inputText value="#{pessoaMb.endereco.endReferencia}"  size="50" style="text-transform: uppercase"/>
+                            </h:panelGrid>
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <p:commandButton update="@this,pesquisaMessagesEndereco,dataTableEndEndereco" process="@this, dialogEnderecos" 
+                                                     oncomplete="if(args.sucesso == true) { dialogEnderecos.hide(); }"
+                                                     action="#{pessoaMb.adicionarEndEndereco}" value="Salvar Endereço" icon="ui-icon-plus"/>
+                                    <p:commandButton value="Fechar" action="#{pessoaMb.limparEndereco}" oncomplete="dialogEnderecos.hide();" immediate="true"/>
+                                </h:panelGrid> 
+                            </center>
+                        </p:panel>
+                    </p:dialog>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

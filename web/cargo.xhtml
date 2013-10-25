@@ -1,0 +1,70 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+
+            <h:form id="formCargo">
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Cargo" style="width: 990px;">
+                    <h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Descrição"/> 
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                            <p:inputText id="descricao" value="#{cargoMb.descricao}" size="60" style="text-transform: uppercase"/>
+                            <p:commandButton action="#{cargoMb.pesquisarCargo}" rendered="#{cargoMb.modo.modoTela == 1}"
+                                             process="@this,descricao" update="@form" icon="ui-icon-search"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <p:commandButton action="#{cargoMb.alterar}" value="Alterar" rendered="#{cargoMb.modo.modoTela == 1 &amp;&amp; cargoMb.crg.crgId != null}" update="formCargo"/>
+                        <p:commandButton action="#{cargoMb.novo}" value="Inserir" rendered="#{cargoMb.modo.modoTela == 1}" update="formCargo"/>
+                        <p:commandButton action="#{cargoMb.salvar}" value="Salvar" rendered="#{cargoMb.modo.modoTela != 1}" update="formCargo"/>
+                        <p:commandButton action="#{cargoMb.cancelar}" value="Cancelar" update="formCargo"/>
+                    </h:panelGrid>
+                    <br/>
+                    <p:dataTable value="#{cargoMb.crgList}" var="crg" paginator="true" paginatorPosition="bottom" rows="7">
+                        <p:column sortBy="#{crg.crgDescricao}" width="90%">
+                            <f:facet name="header">
+                                <h:outputText value="Cargos"/>
+                            </f:facet>
+                            <h:outputText value="#{crg.crgDescricao}"/>
+                        </p:column>
+                        <p:column width="10%"> 
+                            <center>
+                                <p:commandLink action="#{cargoMb.alterar}" update="@form" process="@this" style="width: 26px; height: 26px;">
+                                    <h:graphicImage value="/images/editar.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{crg}" target="#{cargoMb.crg}"/>
+                                    <f:setPropertyActionListener value="#{crg.crgDescricao}" target="#{cargoMb.descricao}"/>
+                                </p:commandLink>
+                                <p:spacer width="15"/>
+                                <p:commandLink onclick="confirmation.show();" process="@this" style="width: 30px; height: 26px;">
+                                    <h:graphicImage value="/images/trash-icon.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{crg}" target="#{cargoMb.crg}"/>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog id="confirmation" message="Deseja realmente excluir esse cargo?"  
+                                     header="Excluir Cargo" severity="alert" widgetVar="confirmation">  
+
+                        <p:commandButton id="confirm" value="Sim quero excluir esse cargo" update="@form" oncomplete="confirmation.hide()"  
+                                         actionListener="#{cargoMb.excluir}" />  
+                        <p:commandButton id="decline" value="Não quero" onclick="confirmation.hide()" type="button" />   
+
+                    </p:confirmDialog>
+                </p:panel>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+
+</html>
