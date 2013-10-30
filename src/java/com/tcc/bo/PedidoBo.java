@@ -9,7 +9,9 @@ import com.tcc.model.PedPedido;
 import com.tcc.model.PpdProdutoPedido;
 import com.tcc.model.SttStatus;
 import com.tcc.util.HibernateUtil;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import org.hibernate.Query;
@@ -120,5 +122,30 @@ public class PedidoBo {
         } else {
             return new ArrayList<PedPedido>();
         }
+    }
+
+    public Integer listarQtdPedidosMesAno(Calendar calendar, SttStatus status) {
+        Integer retorno = 0;
+        SimpleDateFormat formatMes = new SimpleDateFormat("MM");
+        SimpleDateFormat formatAno = new SimpleDateFormat("yyyy");
+        String mes = formatMes.format(calendar.getTime());
+        String ano = formatAno.format(calendar.getTime());
+        Session session = new HibernateUtil().openSession();
+        try {
+            Query q = session.createQuery("Select p from PedPedido p "
+                    + " where p.stt.sttId = :sttId and month(p.pedDataCadastro) = :mes and year(p.pedDataCadastro) = :ano");
+            q.setParameter("mes", Integer.parseInt(mes));
+            q.setParameter("ano", Integer.parseInt(ano));
+            q.setParameter("sttId", status.getSttId());
+            List<PedPedido> lista = q.list();
+            if (lista != null && !lista.isEmpty()) {
+                retorno = lista.size();
+            }
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return retorno;
     }
 }
