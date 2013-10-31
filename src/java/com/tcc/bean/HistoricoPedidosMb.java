@@ -6,9 +6,11 @@ package com.tcc.bean;
 
 import com.tcc.bo.PedidoBo;
 import com.tcc.bo.StatusBo;
+import com.tcc.model.PedPedido;
 import com.tcc.model.SttStatus;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +19,7 @@ import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
 import org.primefaces.model.chart.CartesianChartModel;
 import org.primefaces.model.chart.ChartSeries;
+import org.primefaces.model.chart.PieChartModel;
 
 /**
  *
@@ -27,6 +30,7 @@ import org.primefaces.model.chart.ChartSeries;
 public class HistoricoPedidosMb extends BaseMb implements Serializable {
 
     private CartesianChartModel modeloGrafico = new CartesianChartModel();
+    private CartesianChartModel modeloGraficoDia = new CartesianChartModel();
     private ModoTela modo = new ModoTela();
     private PedidoBo pedidoBo = new PedidoBo();
     private StatusBo statusBo = new StatusBo();
@@ -35,16 +39,24 @@ public class HistoricoPedidosMb extends BaseMb implements Serializable {
     public HistoricoPedidosMb() {
     }
 
-    private void createCategoryModel() {
+    @PostConstruct
+    public void recarregaGraficos() {
         modeloGrafico = new CartesianChartModel();
+        modeloGraficoDia = new CartesianChartModel();
+        //lista os status
+        recarregaGraficoMes();
+        recarregaGraficoDia();
+    }
+
+    private void recarregaGraficoMes() {
         List<SttStatus> sttList = statusBo.listarTodos();
         if (sttList != null && !sttList.isEmpty()) {
             for (SttStatus s : sttList) {
-                ChartSeries serie = new ChartSeries();
-                serie.setLabel(s.getSttDescricao());
-                Date dataAtual = new Date();
+                //cria uma serie para cada status
+                ChartSeries serie = new ChartSeries(s.getSttDescricao());
                 Calendar c = Calendar.getInstance();
-                c.setTime(dataAtual);
+                c.setTime(new Date());
+                //joga  4 meses atras
                 c.add(Calendar.MONTH, -4);
                 for (int i = 0; i < 5; i++) {
                     SimpleDateFormat mes = new SimpleDateFormat("MM");
@@ -59,6 +71,28 @@ public class HistoricoPedidosMb extends BaseMb implements Serializable {
                     c.add(Calendar.MONTH, 1);
                 }
                 modeloGrafico.addSeries(serie);
+            }
+        }
+    }
+
+    private void recarregaGraficoDia() {
+        List<PedPedido> pedidosDia = pedidoBo.listarPedidosDoDia(new Date());
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        if (pedidosDia != null && !pedidosDia.isEmpty()) {
+            List<SttStatus> sttList = statusBo.listarTodos();
+            if (sttList != null && !sttList.isEmpty()) {
+                for (SttStatus s : sttList) {
+                    //cria uma serie para cada status
+                    ChartSeries serie = new ChartSeries(s.getSttDescricao());
+                    Integer quantidade = 0;
+                    for (PedPedido p : pedidosDia) {
+                        if (p.getStt().getSttId().equals(s.getSttId())) {
+                            quantidade++;
+                        }
+                    }
+                    serie.set(df.format(new Date()), quantidade);
+                    modeloGraficoDia.addSeries(serie);
+                }
             }
         }
     }
@@ -96,7 +130,6 @@ public class HistoricoPedidosMb extends BaseMb implements Serializable {
      *
      */
     public CartesianChartModel getModeloGrafico() {
-        createCategoryModel();
         return modeloGrafico;
     }
 
@@ -118,5 +151,13 @@ public class HistoricoPedidosMb extends BaseMb implements Serializable {
 
     public void setMax(Integer max) {
         this.max = max;
+    }
+
+    public CartesianChartModel getModeloGraficoDia() {
+        return modeloGraficoDia;
+    }
+
+    public void setModeloGraficoDia(CartesianChartModel modeloGraficoDia) {
+        this.modeloGraficoDia = modeloGraficoDia;
     }
 }

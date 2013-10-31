@@ -151,6 +151,7 @@ public class UsuarioMb extends BaseMb implements Serializable {
                     if (usrList.size() == 1) {
                         usr = usrList.get(0);
                         tpaId = usr.getTpa().getTpaId();
+                        nome = usr.getPss().getPssNome() + " " + usr.getPss().getPssSobrenome();
                         senhaBloqueada = usr.isUsrSenhaBloqueada();
                         usrList = new ArrayList<UsrUsuario>();
                         modo.setModoTela(ModoTela.VISUALIZACAO);

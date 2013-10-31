@@ -30,7 +30,7 @@
                         <p:commandButton action="#{cargoMb.cancelar}" value="Cancelar" update="formCargo"/>
                     </h:panelGrid>
                     <br/>
-                    <p:dataTable value="#{cargoMb.crgList}" var="crg" paginator="true" paginatorPosition="bottom" rows="7">
+                    <p:dataTable value="#{cargoMb.crgList}" var="crg" paginator="true" paginatorPosition="bottom" rows="7" emptyMessage=" ">
                         <p:column sortBy="#{crg.crgDescricao}" width="90%">
                             <f:facet name="header">
                                 <h:outputText value="Cargos"/>

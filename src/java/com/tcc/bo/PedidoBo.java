@@ -148,4 +148,28 @@ public class PedidoBo {
         }
         return retorno;
     }
+
+    public List<PedPedido> listarPedidosDoDia(Date dia) {
+        List<PedPedido> retorno = new ArrayList<PedPedido>();
+        SimpleDateFormat formatDia = new SimpleDateFormat("dd");
+        SimpleDateFormat formatMes = new SimpleDateFormat("MM");
+        SimpleDateFormat formatAno = new SimpleDateFormat("yyyy");
+        Session session = new HibernateUtil().openSession();
+        try {
+            Query q = session.createQuery("Select p from PedPedido p "
+                    + " where day(p.pedDataCadastro) = :dia and month(p.pedDataCadastro) = :mes and year(p.pedDataCadastro) = :ano");
+            q.setParameter("dia", Integer.parseInt(formatDia.format(dia)));
+            q.setParameter("mes", Integer.parseInt(formatMes.format(dia)));
+            q.setParameter("ano", Integer.parseInt(formatAno.format(dia)));
+            List<PedPedido> lista = q.list();
+            if (lista != null && !lista.isEmpty()) {
+                retorno = lista;
+            }
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return retorno;
+    }
 }

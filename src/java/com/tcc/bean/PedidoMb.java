@@ -366,7 +366,11 @@ public class PedidoMb extends BaseMb implements Serializable {
             if (pedido != null && pedido.getPedId() != null) {
                 pedido.setStt(new SttStatus(sttIdNovo));
                 pedido.setProdutosPedido(produtosPedidos);
+                if(funIdNovo!=null && funIdNovo>0){
                 pedido.setFun(new FunFuncionario(funIdNovo));
+                }else{
+                    pedido.setFun(null);
+                }
                 pedidoBo.alterar(pedido);
                 JPAUtil.addMensagemSucesso(JPAUtil.ALTERADO_COM_SUCESSO);
                 sttId = sttIdNovo;

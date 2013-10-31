@@ -99,7 +99,7 @@
                     </p:panel>
                 </p:dialog>
                 <!-- ************************************************************************************************************************************************************-->
-                <!-- *****INFORMAÇÃO DO PEDIDO *************************************************************************************************************************-->
+                <!-- *****SALVAR NOVO STATUS********************************************************************************************************************-->
                 <!-- ************************************************************************************************************************************************************-->
                 <p:dialog id="dialogAlterarPedido" position="center" style="position: absolute" widgetVar="dialogAlterarPedido" header="Alterar Status" width="500" hideEffect="explode" showEffect="puff">
                     <p:messages id="messagesAlteracao"/>
@@ -112,7 +112,7 @@
                         </h:panelGrid>
                         <h:panelGrid>
                             <h:outputText value="Funcionário:"/>
-                            <p:selectOneMenu value="#{pedidoMb.funIdNovo}" required="true" requiredMessage="Favor informar para qual funcionário o pedido está atribuído">
+                            <p:selectOneMenu value="#{pedidoMb.funIdNovo}">
                                 <f:selectItem itemLabel="" itemValue=""/>
                                 <f:selectItems value="#{pedidoMb.funList}"/>
                             </p:selectOneMenu> 

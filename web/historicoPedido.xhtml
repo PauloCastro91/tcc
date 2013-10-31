@@ -11,16 +11,28 @@
             <h:form id="formHistorico">
                 <p:messages id="messages" /> 
                 <p:panel id="panel" header="Histórico de Pedidos" style="width: 990px;">
+                    <!--*********     POR MES     ************************************************************************************************************* -->
                     <p:barChart id="grafico" value="#{historicoPedidosMb.modeloGrafico}"  
-                                title="Histórico por Mês" zoom="true"
+                                title="Histórico por Mês" zoom="true" legendPosition="e"
                                 stacked="false" barMargin="150" min="0" max="#{historicoPedidosMb.max}"
                                 animate="true" style="height:200px;width: 950px;"/>  
                     <h:panelGrid columns="2">
-                        <p:commandLink update="@this, grafico">
+                        <p:commandLink update="@this, grafico" action="#{historicoPedidosMb.recarregaGraficos()}">
                             <h:graphicImage value="/images/update.png" width="26px;" height="26px;"/>
                         </p:commandLink>
                     </h:panelGrid>
-                    <p:poll interval="300" update="panel" /> 
+                    <!--*********     POR DIA     ************************************************************************************************************* -->
+                    <p:barChart id="graficoDia" value="#{historicoPedidosMb.modeloGraficoDia}"  
+                                title="Histórico por Dia" zoom="true" legendPosition="e"
+                                stacked="false" barMargin="50" min="0" orientation="horizontal"
+                                animate="true" style="height:200px;width: 950px;"/>  
+                    <h:panelGrid columns="2">
+                        <p:commandLink update="@this, graficoDia" action="#{historicoPedidosMb.recarregaGraficos()}">
+                            <h:graphicImage value="/images/update.png" width="26px;" height="26px;"/>
+                        </p:commandLink>
+                    </h:panelGrid>
+                    <br/>
+                    <p:poll interval="180" update="panel" listener="#{historicoPedidosMb.recarregaGraficos()}" /> 
                 </p:panel>
             </h:form>
         </ui:define>
