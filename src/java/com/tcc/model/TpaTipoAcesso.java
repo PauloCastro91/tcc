@@ -5,21 +5,16 @@
 package com.tcc.model;
 
 import java.io.Serializable;
-import java.util.Collection;
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
-import javax.persistence.Transient;
 
 /**
  *
- * @author paulo
+ * @author paulo.castro
  */
 @Entity
 @Table(name = "tpa_tipoAcesso")
@@ -59,7 +54,7 @@ public class TpaTipoAcesso implements Serializable {
     @Override
     public int hashCode() {
         int hash = 3;
-        hash = 19 * hash + (this.tpaId != null ? this.tpaId.hashCode() : 0);
+        hash = 37 * hash + (this.tpaId != null ? this.tpaId.hashCode() : 0);
         return hash;
     }
 
@@ -82,4 +77,6 @@ public class TpaTipoAcesso implements Serializable {
     public String toString() {
         return "TpaTipoAcesso{" + "tpaId=" + tpaId + ", tpaDescricao=" + tpaDescricao + '}';
     }
+    
+     
 }

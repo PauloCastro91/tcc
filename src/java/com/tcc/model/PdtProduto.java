@@ -10,6 +10,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
@@ -25,19 +27,17 @@ public class PdtProduto implements Serializable {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "pdt_id")
     private Integer pdtId;
-  
     @Column(name = "pdt_descricao")
     private String pdtDescricao;
-   
     @Column(name = "pdt_nome")
     private String pdtNome;
-   
     @Column(name = "pdt_valor")
     private Double pdtValor;
-   
     @Column(name = "pdt_ativo")
     private boolean pdtAtivo;
-   
+    @JoinColumn(name = "cat_id", referencedColumnName = "cat_id")
+    @ManyToOne(optional = false)
+    private CatCategoria cat;
     @Transient
     private int quantidade;
 
@@ -122,12 +122,24 @@ public class PdtProduto implements Serializable {
         this.pdtAtivo = pdtAtivo;
     }
 
+    public CatCategoria getCat() {
+        return cat;
+    }
+
+    public void setCat(CatCategoria cat) {
+        this.cat = cat;
+    }
+
     @Override
     public String toString() {
         return pdtNome;
     }
 
     public String toStringCompleto() {
-        return "PdtProduto{" + "pdtId=" + pdtId + ", pdtDescricao=" + pdtDescricao + ", pdtNome=" + pdtNome + ", pdtValor=" + pdtValor + ", pdtAtivo=" + pdtAtivo + '}';
+        String catId = "";
+        if (cat != null && cat.getCatId() != null) {
+            catId = String.valueOf(cat.getCatId());
+        }
+        return "PdtProduto{" + "pdtId=" + pdtId + ", pdtDescricao=" + pdtDescricao + ", pdtNome=" + pdtNome + ", cat=" + catId + ", pdtValor=" + pdtValor + ", pdtAtivo=" + pdtAtivo + '}';
     }
 }

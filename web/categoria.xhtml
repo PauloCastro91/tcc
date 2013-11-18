@@ -1,0 +1,85 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+
+            <h:form id="formCategoria">
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Categoria" style="width: 990px;">
+                    <h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Descrição"/> 
+                        </h:panelGrid>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                            <p:inputText id="descricao" value="#{categoriaMb.descricao}" size="60" style="text-transform: uppercase"/>
+                            <p:commandButton action="#{categoriaMb.pesquisarCategoria}" rendered="#{categoriaMb.modo.modoTela == 1}"
+                                             process="@this,descricao" update="@form" icon="ui-icon-search"/>
+                        </h:panelGrid>
+                    </h:panelGrid>
+                    <h:panelGrid columns="3">
+                        <p:commandButton action="#{categoriaMb.novo}" value="Inserir" rendered="#{categoriaMb.modo.modoTela == 1}" update="formCategoria"/>
+                        <p:commandButton action="#{categoriaMb.salvar}" value="Salvar" rendered="#{categoriaMb.modo.modoTela != 1}" update="formCategoria"/>
+                        <p:commandButton action="#{categoriaMb.cancelar}" value="Cancelar" update="formCategoria"/>
+                    </h:panelGrid>
+                    <br/>
+                    <p:dataTable value="#{categoriaMb.catList}" var="cat" paginator="true" paginatorPosition="bottom" rows="7" emptyMessage="">
+                        <p:column sortBy="#{cat.catDescricao}" width="90%">
+                            <f:facet name="header">
+                                <h:outputText value="Categoria"/>
+                            </f:facet>
+                            <h:outputText value="#{cat.catDescricao}"/>
+                        </p:column>
+                        <p:column width="10%"> 
+                            <center>
+                                <p:commandLink action="#{categoriaMb.alterar}" update="@form" process="@this" style="width: 26px; height: 26px;" rendered="#{cat.catAtivo}">
+                                    <h:graphicImage value="/images/editar.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{cat}" target="#{categoriaMb.cat}"/>
+                                    <f:setPropertyActionListener value="#{cat.catDescricao}" target="#{categoriaMb.descricao}"/>
+                                </p:commandLink>
+                                <p:spacer width="15"/>
+                                <p:commandLink onclick="confirmation.show();" process="@this" style="width: 30px; height: 26px;" rendered="#{cat.catAtivo}">
+                                    <h:graphicImage value="/images/unlocked.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{cat}" target="#{categoriaMb.cat}"/>
+                                </p:commandLink>
+                                <p:commandLink onclick="confirmation_ativar.show();" process="@this" style="width: 30px; height: 26px;" rendered="#{!cat.catAtivo}">
+                                    <h:graphicImage value="/images/locked.png" height="22" width="22"/>
+                                    <f:setPropertyActionListener value="#{cat}" target="#{categoriaMb.cat}"/>
+                                </p:commandLink>
+                            </center>
+                        </p:column>
+                    </p:dataTable>
+                    <p:confirmDialog id="confirmation" message="Deseja realmente inativar essa categoria?"  
+                                     header="Inativar Categoria" severity="alert" widgetVar="confirmation">  
+
+                        <p:commandButton id="confirm" value="Sim quero inativar essa categoria" update="@form" oncomplete="confirmation.hide()"  
+                                         actionListener="#{categoriaMb.inativar}" >
+                            <f:setPropertyActionListener target="#{categoriaMb.cat}" value="#{cat}"/>
+                        </p:commandButton>  
+                        <p:commandButton id="decline" value="Não quero" onclick="confirmation.hide();" type="button" />   
+                    </p:confirmDialog>
+                    <p:confirmDialog id="confirmation_ativar" message="Deseja realmente ativar essa categoria?"  
+                                     header="Ativar Categoria" severity="alert" widgetVar="confirmation_ativar">  
+
+                        <p:commandButton id="confirm_ativar" value="Sim quero ativar essa categoria" update="@form" oncomplete="confirmation_ativar.hide()"  
+                                         actionListener="#{categoriaMb.ativar}" >
+                            <f:setPropertyActionListener target="#{categoriaMb.cat}" value="#{cat}"/>
+                        </p:commandButton>  
+                        <p:commandButton id="decline_ativar" value="Não quero" onclick="confirmation_ativar.hide();" type="button" />   
+                    </p:confirmDialog>
+
+
+                </p:panel>
+            </h:form>
+
+        </ui:define>
+    </ui:composition>
+
+
+</html>

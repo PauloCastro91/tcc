@@ -11,15 +11,21 @@
             <h:form id="formProduto">
                 <p:messages id="messages" /> 
                 <p:panel id="panel" header="Produto" style="width: 990px;">
+                    <h:panelGrid>
+                        <h:outputText value="Nome"/>
+                        <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                            <p:inputText id="nome" value="#{produtoMb.produto.pdtNome}" required="true" requiredMessage="O Nome é Obrigatório!!" size="61" disabled="#{produtoMb.modo.modoTela == 1 &amp;&amp; produtoMb.produto.pdtId != null}" style="text-transform: uppercase"/>
+                            <p:commandLink process="@this, nome" action="#{produtoMb.pesquisar}" update="formProduto,dialogProdutos, messages" id="botaoPesquisar" oncomplete="if(args.sucesso == true) {dialogProdutos.show();}" rendered="#{produtoMb.modo.modoTela == 1}">
+                                <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
+                            </p:commandLink>
+                        </h:panelGrid>
+                    </h:panelGrid>
                     <h:panelGrid columns="3">
                         <h:panelGrid>
-                            <h:outputText value="Nome"/>
-                            <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
-                                <p:inputText id="nome" value="#{produtoMb.produto.pdtNome}" required="true" requiredMessage="O Nome é Obrigatório!!" size="61" disabled="#{produtoMb.modo.modoTela == 1 &amp;&amp; produtoMb.produto.pdtId != null}" style="text-transform: uppercase"/>
-                                <p:commandLink process="@this, nome" action="#{produtoMb.pesquisar}" update="formProduto,dialogProdutos, messages" id="botaoPesquisar" oncomplete="if(args.sucesso == true) {dialogProdutos.show();}" rendered="#{produtoMb.modo.modoTela == 1}">
-                                    <h:graphicImage value="/images/pesquisar.png" width="26px;" height="26px;"/>
-                                </p:commandLink>
-                            </h:panelGrid>
+                            <h:outputText value="Categoria"/>
+                            <p:selectOneMenu value="#{produtoMb.produto.cat.catId}" disabled="#{produtoMb.modo.modoTela == 1}">
+                                <f:selectItems value="#{produtoMb.categorias}"/>
+                            </p:selectOneMenu>
                         </h:panelGrid>
                         <h:panelGrid>
                             <h:outputText value="Valor"/>

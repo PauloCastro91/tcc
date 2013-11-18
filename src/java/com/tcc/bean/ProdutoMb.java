@@ -4,7 +4,9 @@
  */
 package com.tcc.bean;
 
+import com.tcc.bo.CategoriaBo;
 import com.tcc.bo.ProdutoBo;
+import com.tcc.model.CatCategoria;
 import com.tcc.model.CntContato;
 import com.tcc.model.EndEndereco;
 import com.tcc.model.PdtProduto;
@@ -15,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import javax.faces.bean.ManagedBean;
 import javax.faces.bean.ViewScoped;
+import javax.faces.model.SelectItem;
+import org.hibernate.sql.Select;
 import org.primefaces.context.RequestContext;
 
 /**
@@ -30,12 +34,16 @@ public class ProdutoMb extends BaseMb implements Serializable {
     private List<PdtProduto> pdtList = new ArrayList<PdtProduto>();
     private ModoTela modo = new ModoTela();
     private Double valor = 0.0;
+    private List<SelectItem> categorias = new ArrayList<SelectItem>();
 
     public ProdutoMb() {
+        produto = new PdtProduto();
+        produto.setCat(new CatCategoria());
     }
 
     public void limpar() {
         produto = new PdtProduto();
+        produto.setCat(new CatCategoria());
         pdtList = new ArrayList<PdtProduto>();
         valor = 0.0;
         modo.setModoTela(ModoTela.VISUALIZACAO);
@@ -47,6 +55,7 @@ public class ProdutoMb extends BaseMb implements Serializable {
 
     public void novo() {
         produto = new PdtProduto();
+        produto.setCat(new CatCategoria());
         pdtList = new ArrayList<PdtProduto>();
         valor = 0.0;
         modo.setModoTela(ModoTela.INSERCAO);
@@ -85,6 +94,9 @@ public class ProdutoMb extends BaseMb implements Serializable {
                     produto = new PdtProduto();
                     setProduto(pdtList.get(0));
                     valor = produto.getPdtValor();
+                    if(produto.getCat()==null || produto.getCat().getCatId()==null){
+                        produto.setCat(new CatCategoria());
+                    }
                     pdtList = new ArrayList<PdtProduto>();
                 } else {
                     RequestContext request = RequestContext.getCurrentInstance();
@@ -108,6 +120,17 @@ public class ProdutoMb extends BaseMb implements Serializable {
                 }
             } else {
                 throw new Exception("Já existe um produto com esse nome!");
+            }
+        }
+    }
+
+    public void carregarCategorias() {
+        categorias = new ArrayList<SelectItem>();
+        CategoriaBo catBo = new CategoriaBo();
+        List<CatCategoria> lista = catBo.listarTodos();
+        if (lista != null && !lista.isEmpty()) {
+            for (CatCategoria c : lista) {
+                categorias.add(new SelectItem(c.getCatId(), c.getCatDescricao()));
             }
         }
     }
@@ -145,5 +168,16 @@ public class ProdutoMb extends BaseMb implements Serializable {
 
     public void setPdtList(List<PdtProduto> pdtList) {
         this.pdtList = pdtList;
+    }
+
+    public List<SelectItem> getCategorias() {
+        if (categorias == null || categorias.isEmpty()) {
+            carregarCategorias();
+        }
+        return categorias;
+    }
+
+    public void setCategorias(List<SelectItem> categorias) {
+        this.categorias = categorias;
     }
 }

@@ -22,6 +22,7 @@
         <mapping class="com.tcc.model.SttStatus"/>
         <mapping class="com.tcc.model.PpdProdutoPedido"/>
         <mapping class="com.tcc.model.UsrUsuario"/>
+        <mapping class="com.tcc.model.CatCategoria"/>
         <mapping class="com.tcc.model.TpaTipoAcesso"/>
     </session-factory>
 </hibernate-configuration>

@@ -1,0 +1,88 @@
+<?xml version='1.0' encoding='UTF-8' ?>
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+        <link href="./resources/css/cssLayoutCliente.css" rel="stylesheet" type="text/css" />
+        <title>M.T.D.O - Management of Traceble Delivery and Orders</title>
+        <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/primefaces_lang.js"></script>
+        <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/util.js"></script>
+        <ui:insert name="javascript"><!-- user javascript inclusion --></ui:insert>
+    </h:head>
+    <h:body>
+        <h:form id="formCliente">
+
+            <div class="wap">
+                <div class="topo">
+                    <div class="tEsquerda">
+                        &nbsp;
+                    </div>
+                    <div class="dLogo">
+                        <img src="images/mtdoBoy.png" style="max-height:130px;" />
+                    </div>
+                    <div class="tesquerda">
+                        &nbsp;
+
+
+                    </div>
+                </div>
+
+                <div class="rMenu">
+                    <ui:insert name="rMenu">
+                        <h:panelGrid>
+                            <h:outputText value="Login:"/>
+                            <p:inputText size="20" maxlength="60"/>
+                        </h:panelGrid>
+                        <h:panelGrid>
+                            <h:outputText value="Senha:"/>
+                            <p:password size="20" maxlength="60"/>
+                        </h:panelGrid>
+                        <p:commandButton icon="ui-icon-unlocked" value="Logar" style="margin-bottom: 20px;"/>
+                        <p:panelMenu style="width:200px">  
+                            <p:submenu label="Pedidos">  
+                                <p:menuitem value="Carrinho de Compras" />  
+                                <p:menuitem value="Histórico de Pedidos" />  
+                            </p:submenu>
+                            <p:submenu label="Minha Conta">  
+                                <p:menuitem value="Trocar senha" />  
+                                <p:menuitem value="Alterar meus dados" />  
+                            </p:submenu> 
+                            <p:submenu label="Sistema">  
+                                <p:menuitem value="LogOut" />  
+                            </p:submenu>  
+                        </p:panelMenu>
+                    </ui:insert>
+                </div>
+                <div class="corpo">
+                </div>
+               
+                <div class="rodape">
+                    <ui:insert name="rodape">
+                        <center>
+                            <br/>
+                            M.T.D.O - Management of Traceble Delivery and Orders © Todos os direitos reservados
+                            <p:ajaxStatus id="ajaxStatusPanel">  
+                                <f:facet name="start">  
+                                    <h:graphicImage value="/images/loading.gif" width="25" height="25"/>  
+                                </f:facet>  
+                                <f:facet name="complete">  
+                                    <h:outputText value="" />  
+                                </f:facet>  
+                            </p:ajaxStatus>
+                        </center>
+                    </ui:insert>
+                </div>
+            </div>    
+        </h:form>
+    </h:body>
+
+</html>
+
+
+

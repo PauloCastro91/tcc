@@ -8,8 +8,8 @@ package com.tcc.bean;
  *
  * @author paulo.castro
  */
-import com.tcc.bo.StatusBo;
-import com.tcc.model.SttStatus;
+import com.tcc.bo.CategoriaBo;
+import com.tcc.model.CatCategoria;
 import com.tcc.util.JPAUtil;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -24,15 +24,15 @@ import javax.faces.bean.ViewScoped;
  */
 @ManagedBean
 @ViewScoped
-public class StatusMb extends BaseMb implements Serializable {
+public class CategoriaMb extends BaseMb implements Serializable {
 
-    private SttStatus stt = new SttStatus();
+    private CatCategoria cat = new CatCategoria();
     private ModoTela modo = new ModoTela();
-    private StatusBo statusBo = new StatusBo();
-    private List<SttStatus> sttList = new ArrayList<SttStatus>();
+    private CategoriaBo statusBo = new CategoriaBo();
+    private List<CatCategoria> catList = new ArrayList<CatCategoria>();
     private String descricao;
 
-    public StatusMb() {
+    public CategoriaMb() {
     }
 
     public void cancelar() {
@@ -40,14 +40,14 @@ public class StatusMb extends BaseMb implements Serializable {
     }
 
     public void limpar() {
-        stt = new SttStatus();
+        cat = new CatCategoria();
         descricao = "";
         recarregarLista();
         modo.setModoTela(ModoTela.VISUALIZACAO);
     }
 
     public void novo() {
-        stt = new SttStatus();
+        cat = new CatCategoria();
         descricao = "";
         modo.setModoTela(ModoTela.INSERCAO);
     }
@@ -57,21 +57,21 @@ public class StatusMb extends BaseMb implements Serializable {
     }
 
     public void validarDuplicidade() throws Exception {
-        List<SttStatus> mesmaDescricao = statusBo.carrgar(descricao);
+        List<CatCategoria> mesmaDescricao = statusBo.carrgar(descricao);
         if (mesmaDescricao != null && !mesmaDescricao.isEmpty()) {
-            if (stt != null && stt.getSttId() != null) {
+            if (cat != null && cat.getCatId() != null) {
                 boolean jaUsuada = false;
-                for (SttStatus c : mesmaDescricao) {
-                    if ((!c.getSttId().equals(stt.getSttId())) && (stt.getSttDescricao().trim().equalsIgnoreCase(stt.getSttDescricao().trim()))) {
+                for (CatCategoria c : mesmaDescricao) {
+                    if ((!c.getCatId().equals(cat.getCatId())) && (cat.getCatDescricao().trim().equalsIgnoreCase(cat.getCatDescricao().trim()))) {
                         jaUsuada = true;
                         break;
                     }
                 }
                 if (jaUsuada) {
-                    throw new Exception("Descrição já usada para outro status");
+                    throw new Exception("Descrição já usada para outro registro");
                 }
             } else {
-                throw new Exception("Descrição já usada para outro status");
+                throw new Exception("Descrição já usada para outro registro");
             }
         }
     }
@@ -79,16 +79,16 @@ public class StatusMb extends BaseMb implements Serializable {
     public void salvar() {
         try {
             if ((descricao != null) && (!descricao.trim().isEmpty()) && (descricao.trim().length() >= 3)) {
-                stt.setSttDescricao(descricao);
+                cat.setCatDescricao(descricao);
                 validarDuplicidade();
-                if (stt.getSttId() != null) {
-                    statusBo.alterar(stt);
+                if (cat.getCatId() != null) {
+                    statusBo.alterar(cat);
                 } else {
-                    statusBo.inserir(stt);
+                    statusBo.inserir(cat);
                 }
                 limpar();
             } else {
-                throw new Exception("Insira Pelo menos 3 letras na descrição do Status!");
+                throw new Exception("Insira Pelo menos 3 letras na descrição do Categoria!");
             }
         } catch (Exception e) {
             JPAUtil.addMensagemErro(e.getMessage());
@@ -98,19 +98,19 @@ public class StatusMb extends BaseMb implements Serializable {
     @PostConstruct
     public void recarregarLista() {
         try {
-            sttList = new ArrayList<SttStatus>();
-            sttList = statusBo.listarTodos();
+            catList = new ArrayList<CatCategoria>();
+            catList = statusBo.listarTodos();
         } catch (Exception e) {
             JPAUtil.addMensagemErro(e.getMessage());
         }
     }
 
-    public void pesquisarStatus() {
+    public void pesquisarCategoria() {
         try {
-            sttList = new ArrayList<SttStatus>();
+            catList = new ArrayList<CatCategoria>();
             if ((descricao != null) && (!descricao.trim().isEmpty()) && (descricao.trim().length() >= 2)) {
-                sttList = new ArrayList<SttStatus>();
-                sttList = statusBo.carrgar(descricao);
+                catList = new ArrayList<CatCategoria>();
+                catList = statusBo.carrgar(descricao);
             } else {
                 throw new Exception("Insira Pelo menos 2 letras para busca!");
             }
@@ -120,26 +120,26 @@ public class StatusMb extends BaseMb implements Serializable {
     }
 
     public void inativar() {
-        statusBo.inativar(stt);
-        stt = new SttStatus();
+        statusBo.inativar(cat);
+        cat = new CatCategoria();
         modo = new ModoTela();
     }
 
     public void ativar() {
-        statusBo.ativar(stt);
-        stt = new SttStatus();
+        statusBo.ativar(cat);
+        cat = new CatCategoria();
         modo = new ModoTela();
     }
 
     /**
      * Getters and Setters
      */
-    public SttStatus getStt() {
-        return stt;
+    public CatCategoria getCat() {
+        return cat;
     }
 
-    public void setStt(SttStatus stt) {
-        this.stt = stt;
+    public void setCat(CatCategoria cat) {
+        this.cat = cat;
     }
 
     public ModoTela getModo() {
@@ -150,20 +150,20 @@ public class StatusMb extends BaseMb implements Serializable {
         this.modo = modo;
     }
 
-    public StatusBo getStatusBo() {
+    public CategoriaBo getCategoriaBo() {
         return statusBo;
     }
 
-    public void setStatusBo(StatusBo statusBo) {
+    public void setCategoriaBo(CategoriaBo statusBo) {
         this.statusBo = statusBo;
     }
 
-    public List<SttStatus> getSttList() {
-        return sttList;
+    public List<CatCategoria> getCatList() {
+        return catList;
     }
 
-    public void setSttList(List<SttStatus> sttList) {
-        this.sttList = sttList;
+    public void setCatList(List<CatCategoria> catList) {
+        this.catList = catList;
     }
 
     public String getDescricao() {

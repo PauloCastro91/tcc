@@ -61,23 +61,7 @@ public class Gps {
     public List<LatLongGPS> getCoodenadas() {
         return new ArrayList<LatLongGPS>(eventosMap.values());
     }
-//
-//    @Path("{id}")
-//    @PUT
-//    @Consumes("text/xml")
-//    @Produces("text/plain")
-//    public String atualizaEvento(Evento evento, @PathParam("id") int id) {
-//        Evento atual = eventosMap.get(id);
-//        atual.setNome(evento.getNome());
-//        atual.setInicio(evento.getInicio());
-//        return evento.getNome() + " atualizada.\n";
-//    }
-//
-//    @Path("{id}")
-//    @DELETE
-//    @Produces("text/plain")
-//    public String removeEvento(@PathParam("id") int id) {
-//        eventosMap.remove(id);
-//        return "Evento removido.\n";
-//    }
+    
+    
+    
 }
