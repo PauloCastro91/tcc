@@ -27,46 +27,463 @@
                         <img src="images/mtdoBoy.png" style="max-height:130px;" />
                     </div>
                     <div class="tesquerda">
-                        &nbsp;
-
 
                     </div>
                 </div>
 
                 <div class="rMenu">
                     <ui:insert name="rMenu">
-                        <h:panelGrid>
-                            <h:outputText value="Login:"/>
-                            <p:inputText size="20" maxlength="60"/>
+                        <h:panelGrid rendered="#{clienteMb.usuario.usrId == null}">
+                            <h:panelGrid>
+                                <h:outputText value="Login:"/>
+                                <p:inputText id="usuario" value="#{clienteMb.login}" size="20" maxlength="60"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <h:outputText value="Senha:"/>
+                                <p:password id="senha" value="#{clienteMb.senha}" size="20" maxlength="60"/>
+                            </h:panelGrid>
+                            <p:commandButton action="#{clienteMb.logar}" process="@this, usuario, senha"
+                                             update="formCliente,messagesConteudo" icon="ui-icon-unlocked" value="Logar" style="margin-bottom: 20px;"/>
                         </h:panelGrid>
-                        <h:panelGrid>
-                            <h:outputText value="Senha:"/>
-                            <p:password size="20" maxlength="60"/>
-                        </h:panelGrid>
-                        <p:commandButton icon="ui-icon-unlocked" value="Logar" style="margin-bottom: 20px;"/>
-                        <p:panelMenu style="width:200px">  
+                        <p:panelMenu style="width:200px"  rendered="#{clienteMb.usuario.usrId != null}">  
+                            <p:submenu label="Produtos">
+                                <p:menuitem process="@this" value="Visualizar Produtos" update="panelGridConteudo">
+                                    <f:setPropertyActionListener value="#{clienteMb.TELA_VISUALIZA_PRODUTO}" target="#{clienteMb.telaAtual}"/>
+                                </p:menuitem>
+                            </p:submenu>  
                             <p:submenu label="Pedidos">  
-                                <p:menuitem value="Carrinho de Compras" />  
-                                <p:menuitem value="Histórico de Pedidos" />  
+                                <p:menuitem action="#{clienteMb.carregaDados}" process="@this" value="Carrinho de Compras" update="panelGridConteudo">
+                                    <f:setPropertyActionListener value="#{clienteMb.TELA_CARRINHO}" target="#{clienteMb.telaAtual}"/>
+                                </p:menuitem>  
+                                <p:menuitem process="@this" value="Acompanhar Pedido" update="panelGridConteudo">
+                                    <f:setPropertyActionListener value="#{clienteMb.TELA_ACOMPANHAR_PEDIDO}" target="#{clienteMb.telaAtual}"/>
+                                </p:menuitem>  
                             </p:submenu>
                             <p:submenu label="Minha Conta">  
-                                <p:menuitem value="Trocar senha" />  
-                                <p:menuitem value="Alterar meus dados" />  
+                                <p:menuitem process="@this" value="Trocar senha" update="panelGridConteudo">
+                                    <f:setPropertyActionListener value="#{clienteMb.TELA_TROCA_SENHA}" target="#{clienteMb.telaAtual}"/>
+                                    <f:setPropertyActionListener target="#{clienteMb.senhaAtual}" value=""/>
+                                    <f:setPropertyActionListener target="#{clienteMb.senhaNova}" value=""/>
+                                    <f:setPropertyActionListener target="#{clienteMb.senhaNovaConfirmacao}" value=""/>
+                                </p:menuitem>  
+                                <p:menuitem process="@this" value="Alterar meus dados" action="#{clienteMb.carregaDados}" update="panelGridConteudo">
+                                    <f:setPropertyActionListener value="#{clienteMb.TELA_ALTERA_DADOS}" target="#{clienteMb.telaAtual}"/>
+                                </p:menuitem>  
                             </p:submenu> 
                             <p:submenu label="Sistema">  
-                                <p:menuitem value="LogOut" />  
+                                <p:menuitem process="@this" value="Sair" action="#{clienteMb.deslogar}" update="@form"/>  
                             </p:submenu>  
                         </p:panelMenu>
                     </ui:insert>
                 </div>
                 <div class="corpo">
-                </div>
-               
+                    <h:panelGrid id="panelGridConteudo">
+                        <p:growl id="messagesConteudo"/>
+                        <!-- #####################################################################################################################################################################-->
+                        <!-- #PANEL ALTERA DADOS                                  ################################################################################################################-->
+                        <!-- #####################################################################################################################################################################-->
+                        <p:panel style="width: 1070px;min-height: 380px;" header="Alterar meus dados" rendered="#{clienteMb.telaAtual.equalsIgnoreCase(clienteMb.TELA_ALTERA_DADOS)}">
+                            <h:panelGrid columns="4"> 
+                                <h:panelGrid columns="2"> 
+                                    <h:outputText value="Nome: " style="font-weight: bold"/>
+                                    <h:outputText id="pessoaNome" value="#{clienteMb.usuario.pss.pssNome}" style="text-transform: uppercase"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2"> 
+                                    <h:outputText value="Sobrenome: " style="font-weight: bold"/>
+                                    <h:outputText id="pessoaSobreNome" value="#{clienteMb.usuario.pss.pssSobrenome}" style="text-transform: uppercase"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2"> 
+                                    <h:outputText value="Usuário: " style="font-weight: bold"/>
+                                    <h:outputText id="login" value="#{clienteMb.usuario.usrLogin}"/>
+                                </h:panelGrid>
+                                <h:panelGrid columns="2"> 
+                                    <h:outputText value="Email: " style="font-weight: bold"/>
+                                    <h:outputText id="email" value="#{clienteMb.usuario.usrEmail}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <br/>
+                            <!-- Contatos********************************************************************************************************************************************************** -->
+                            <h:panelGrid columns="2" id="panelGridContato">
+                                <h:outputText value="Meus Contatos:"/>
+                                <p:commandLink id="addContato" style="height: 20px;height: 20px;" action="#{clienteMb.novoContato}" onclick="dialogContatos.show();"
+                                               process="@this" update="panelContato,pesquisaMessagesContatos">
+                                    <h:graphicImage value="/images/mais.png" height="22" width="22"/>
+                                </p:commandLink>  
+                            </h:panelGrid>
+                            <p:dataTable id="dataTableCntContato" value="#{clienteMb.cntList}" var="cnt" emptyMessage="Nenhum contato cadastrado até o momento"
+                                         paginatorPosition="bottom" paginator="true" rows="2" style="width: 300px;">
+                                <p:column  width="200">
+                                    <f:facet name="header"><h:outputText value="Contato"/></f:facet>
+                                    <h:outputText value="#{cnt.cntDescricao}"/>
+                                </p:column>
+                                <p:column width="100"> 
+                                    <center>
+                                        <p:commandLink onclick="confirmation.show();" process="@this" id="excluirContato" 
+                                                       style="width: 22px; height: 22px;">
+                                            <h:graphicImage value="/images/trash-icon.png" height="22" width="22"/>
+                                            <f:setPropertyActionListener value="#{cnt}" target="#{clienteMb.cnt}"/>
+                                        </p:commandLink>
+                                    </center>
+                                </p:column>
+                            </p:dataTable>
+                            <p:confirmDialog id="confirmation" message="Deseja realmente excluir esse contato?"  
+                                             header="Excluir contato" severity="alert" widgetVar="confirmation">  
+
+                                <p:commandButton id="confirm" value="Sim quero excluir esse contato" update=":formCliente:dataTableCntContato" oncomplete="confirmation.hide()"  
+                                                 process="@this" actionListener="#{clienteMb.excluirContato}" />  
+                                <p:commandButton id="decline" value="Não quero" onclick="confirmation.hide()" type="button">
+                                    <f:setPropertyActionListener value="#{null}" target="#{clienteMb.cnt}"/>
+                                </p:commandButton>
+                            </p:confirmDialog>
+                            <br/>
+                            <!-- Enderecos********************************************************************************************************************************************************* -->
+                            <h:panelGrid columns="2" id="panelGridEndereco">
+                                <h:outputText value="Endereços:"/>
+                                <p:commandLink id="addEndereco" style="height: 20px;height: 20px;" action="#{clienteMb.novoEndereco}" onclick="dialogEnderecos.show();"
+                                               process="@this" update="formCliente:pesquisaMessagesEndereco,panelEndereco">
+                                    <h:graphicImage value="/images/mais.png" height="22" width="22"/>
+                                </p:commandLink>  
+                            </h:panelGrid>
+                            <p:dataTable id="dataTableEndEndereco" value="#{clienteMb.endList}" var="record" emptyMessage="Nenhum endereço cadastrado até o momento"
+                                         rows="2" paginatorPosition="bottom" paginator="true" style="width: 900px;">
+                                <p:column width="300">
+                                    <f:facet name="header"><h:outputText value="Logradouro"/></f:facet>
+                                    <h:outputText value="#{record.lgr.lgrDescricao}"  style="text-transform: uppercase"/>
+                                </p:column>
+                                <p:column width="20">
+                                    <f:facet name="header"><h:outputText value="Nº"/></f:facet>
+                                    <h:outputText value="#{record.endNumero}" style="text-transform: uppercase"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Complemento"/></f:facet>
+                                    <h:outputText value="#{record.endComplemento}" style="text-transform: uppercase"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Cep"/></f:facet>
+                                    <h:outputText value="#{record.lgr.lgrCep}" style="text-transform: uppercase"/>
+                                </p:column>
+                                <p:column>
+                                    <f:facet name="header"><h:outputText value="Cidade"/></f:facet>
+                                    <h:outputText value="#{record.lgr.lgrCidade}" style="text-transform: uppercase"/>
+                                </p:column> 
+                                <p:column> 
+                                    <center>
+                                        <p:commandLink update=":formCliente:pesquisaMessagesEndereco,:formCliente:panelEndereco" process="@this" onclick="dialogEnderecos.show();" style="width: 26px; height: 26px;">
+                                            <f:setPropertyActionListener  value="#{record}" target="#{clienteMb.endereco}"/>
+                                            <f:setPropertyActionListener value="#{record.lgr.lgrCep}" target="#{clienteMb.enderecoMemoria.lgr.lgrCep}"/>
+                                            <f:setPropertyActionListener value="#{record.lgr.lgrDescricao}" target="#{clienteMb.enderecoMemoria.lgr.lgrDescricao}"/>
+                                            <f:setPropertyActionListener value="#{record.endNumero}" target="#{clienteMb.enderecoMemoria.endNumero}"/>
+                                            <f:setPropertyActionListener value="#{record.endComplemento}" target="#{clienteMb.enderecoMemoria.endComplemento}"/>
+                                            <f:setPropertyActionListener value="#{record.endReferencia}" target="#{clienteMb.enderecoMemoria.endReferencia}"/>
+                                            <f:setPropertyActionListener value="#{true}" target="#{record.selecionado}"/>
+                                            <h:graphicImage value="/images/editar.png" height="22" width="22"/>
+                                        </p:commandLink>
+                                        <p:spacer width="10"/>
+                                        <p:commandLink onclick="confirmationEnd.show();" process="@this" id="excluirEndereco" 
+                                                       style="width: 22px; height: 22px;">
+                                            <h:graphicImage value="/images/trash-icon.png" height="22" width="22"/>
+                                            <f:setPropertyActionListener value="#{record}" target="#{clienteMb.endereco}"/>
+                                        </p:commandLink>
+                                    </center>
+                                </p:column>
+                            </p:dataTable>
+                            <p:confirmDialog id="confirmationEnd" message="Deseja realmente excluir esse endereço?"  
+                                             header="Excluir Endereço" severity="alert" widgetVar="confirmationEnd">  
+
+                                <p:commandButton id="confirmEnd" value="Sim quero excluir esse endereço" update=":formCliente:dataTableEndEndereco" oncomplete="confirmationEnd.hide()"  
+                                                 process="@this" actionListener="#{clienteMb.excluirEndereco}" />  
+                                <p:commandButton id="declineEnd" value="Não quero" onclick="confirmationEnd.hide()" type="button">
+                                    <f:setPropertyActionListener value="#{null}" target="#{clienteMb.endereco}"/>
+                                </p:commandButton>   
+
+                            </p:confirmDialog>
+
+                        </p:panel>
+                        <!-- #####################################################################################################################################################################-->
+                        <!-- #PANEL ALTERA DADOS                                  ################################################################################################################-->
+                        <!-- #####################################################################################################################################################################-->
+                        <p:panel style="width: 1070px;min-height: 380px;" header="Trocar Senha" rendered="#{clienteMb.telaAtual.equalsIgnoreCase(clienteMb.TELA_TROCA_SENHA)}">
+                            <h:panelGrid>
+                                <h:outputText value="Senha Atual: " style="font-weight: bold"/>
+                                <p:password id="senhaAtual" size="40" maxlength="60" value="#{clienteMb.senhaAtual}"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <h:outputText value="Nova Senha: " style="font-weight: bold"/>
+                                <p:password id="senhaNova" size="40" maxlength="60" value="#{clienteMb.senhaNova}" weakLabel="Fraca :(" goodLabel="Boa :)" strongLabel="Agora Sim, senha segura :D" feedback="true" promptLabel="Entre com uma Nova Senha"/>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <h:outputText value="Confirmação da Nova Senha: " style="font-weight: bold"/>
+                                <p:password id="senhaNovaConf" size="40" maxlength="60" value="#{clienteMb.senhaNovaConfirmacao}"/>
+                            </h:panelGrid>
+                            <p:commandButton id="botaoTrocaSenha" action="#{clienteMb.trocaSenha}" value="Trocar Senha" update="@form"/>
+                        </p:panel>  
+                        <!-- #####################################################################################################################################################################-->
+                        <!-- #PANEL VISUALIZA PEDIDOS                            #################################################################################################################-->
+                        <!-- #####################################################################################################################################################################-->
+                        <p:panel style="width: 1070px;min-height: 380px;" header="Visualizar Pedidos" rendered="#{clienteMb.telaAtual.equalsIgnoreCase(clienteMb.TELA_VISUALIZA_PRODUTO)}">
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Escolha a categoria do Produto: "/>
+                                <p:selectOneMenu id="categoria" effect="bounce" value="#{clienteMb.catId}">
+                                    <f:selectItems value="#{clienteMb.catList}"/>
+                                    <p:ajax event="change" process="@this,categoria" listener="#{clienteMb.recarregarProdutos}" update="dataTableProdutos,messagesConteudo"/>
+                                </p:selectOneMenu>
+                            </h:panelGrid>
+                            <br/><hr/><br/>
+                            <br/>
+                            <p:dataTable id="dataTableProdutos" value="#{clienteMb.pdtList}" var="pdt" rows="5"
+                                         emptyMessage="" paginator="true" paginatorPosition="bottom">
+                                <p:column headerText="Nome">
+                                    <h:outputText value="#{pdt.pdtNome}"></h:outputText>
+                                </p:column>
+                                <p:column headerText="Descrição">
+                                    <h:outputText value="#{pdt.pdtDescricao}" style="font-size: xx-small"></h:outputText>
+                                </p:column>
+                                <p:column headerText="Preço">
+                                    <h:outputText value="#{pdt.pdtValor}"></h:outputText>
+                                </p:column>
+                                <p:column>
+                                    <p:commandLink id="addCarrinho" action="#{clienteMb.addCarrinho}" process="@this" update="panelGridConteudo" ajax="false">
+                                        <h:graphicImage value="/images/carrinhoCompras.png" height="22" width="22"/>
+                                        <f:setPropertyActionListener value="#{pdt}" target="#{clienteMb.pdt}"/>
+                                    </p:commandLink>
+                                    <p:tooltip for="addCarrinho">
+                                        <h:outputText value="Adicionar #{pdt.pdtNome} ao carrinho"/>
+                                    </p:tooltip>
+                                </p:column>
+                            </p:dataTable>
+                        </p:panel>
+                        <!-- #####################################################################################################################################################################-->
+                        <!-- #PANEL VISUALIZA PEDIDOS                            #################################################################################################################-->
+                        <!-- #####################################################################################################################################################################-->
+                        <p:panel style="width: 1070px;min-height: 380px;" header="Carrinho de Compras" rendered="#{clienteMb.telaAtual.equalsIgnoreCase(clienteMb.TELA_CARRINHO)}">
+                            <h:panelGrid id="panelGridProdutosSelecionados">
+                                <h:outputText value="Produtos Selecionados:"/>
+                                <p:dataTable id="dataTableProdutosSelecionados" value="#{clienteMb.produtosSelecionados}" 
+                                             editable="true" editMode="cell"
+                                             var="pdtSel" emptyMessage="" style="width: 950px;">
+                                    <p:ajax event="cellEdit" listener="#{clienteMb.onCellEdit}" update="dataTableProdutosSelecionados" />  
+                                    <p:column headerText="Produto" style="width: 150px;">
+                                        <h:outputText value="#{pdtSel.pdtNome}"/>
+                                    </p:column>
+                                    <p:column headerText="Descrição" style="width: 680px;">
+                                        <h:outputText value="#{pdtSel.pdtDescricao}"/>
+                                    </p:column>
+                                    <p:column headerText="Preço" style="width: 70px;">
+                                        <h:outputText value="#{pdtSel.pdtValor}"/>
+                                    </p:column>
+                                    <p:column headerText="Qnt" style="width: 50px;">  
+                                        <p:cellEditor>  
+                                            <f:facet name="output"><h:outputText value="#{pdtSel.quantidade}" /></f:facet>  
+                                            <f:facet name="input"><p:inputText id="modelInput" value="#{pdtSel.quantidade}" size="2"/></f:facet>  
+                                        </p:cellEditor>  
+                                    </p:column>  
+                                    <p:column headerText="">
+                                        <p:commandLink process="@this" update="@this,dataTableProdutosSelecionados" action="#{clienteMb.excluirProduto}">
+                                            <h:graphicImage value="/images/trash-icon.png" height="22" width="22"/>
+                                            <f:setPropertyActionListener value="#{pdtSel}" target="#{clienteMb.pdt}"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                    <f:facet name="footer">  
+                                        <h:outputText value="Valor total da compra: R$ #{clienteMb.valorTotal}"/>
+                                    </f:facet> 
+                                </p:dataTable>
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid>
+                                <h:outputText value="Endereços disponíveis:"/>
+                                <p:dataTable value="#{clienteMb.endList}" var="end" emptyMessage="">
+                                    <p:column width="300" headerText="Logradouro">
+                                        <h:outputText value="#{end.lgr.lgrDescricao}"  style="text-transform: uppercase"/>
+                                    </p:column>
+                                    <p:column width="20" headerText="Nº">
+                                        <h:outputText value="#{end.endNumero}" style="text-transform: uppercase"/>
+                                    </p:column>
+                                    <p:column headerText="Complemento">
+                                        <h:outputText value="#{end.endComplemento}" style="text-transform: uppercase"/>
+                                    </p:column>
+                                    <p:column headerText="Cep">
+                                        <h:outputText value="#{end.lgr.lgrCep}" style="text-transform: uppercase"/>
+                                    </p:column>
+                                    <p:column headerText="Cidade">
+                                        <h:outputText value="#{end.lgr.lgrCidade}" style="text-transform: uppercase"/>
+                                    </p:column> 
+                                    <p:column>
+                                        <p:commandLink process="@this" update=":formCliente:panelEnderecoEntrega" action="#{clienteMb.carregarEnderecoEntrega}">
+                                            <h:graphicImage value="/images/mais.png" height="22" width="22"/>
+                                            <f:setPropertyActionListener value="#{end}" target="#{clienteMb.enderecoEntrega}"/>
+                                        </p:commandLink>
+                                    </p:column>
+                                </p:dataTable>
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid id="panelEnderecoEntrega">
+                                <h:outputText value="Endereço de Entrega:"/>
+                                <p:inputText id="enderecoEntrega" size="120" value="#{clienteMb.enderecoEntregaString}" disabled="true"/>
+                            </h:panelGrid>
+                            <p:commandButton value="Comprar" action="#{clienteMb.comprar}" update="@form"/>
+                        </p:panel>
+                        <!-- #####################################################################################################################################################################-->
+                        <!-- #PANEL VISUALIZA PEDIDOS                            #################################################################################################################-->
+                        <!-- #####################################################################################################################################################################-->
+                        <p:panel style="width: 1070px;min-height: 380px;" header="Carrinho de Compras" rendered="#{clienteMb.telaAtual.equalsIgnoreCase(clienteMb.TELA_ACOMPANHAR_PEDIDO)}">
+                            <h:outputText value="Acompanhe seu pedido:"/>
+                            <br/>
+                            <br/>
+                            <center>
+                                <p:dataTable id="dataTablePedidos" value="#{clienteMb.pedidos}" var="ped" emptyMessage=""
+                                             rows="10" paginatorPosition="bottom" paginator="true" >
+                                    <p:column headerText="Data/Hora" style="width: 600px;">
+                                        <h:outputText value="#{ped.dataCadastroString}"/>
+                                    </p:column>
+                                    <p:column headerText="Valor" style="width: 100px;">
+                                        <center><h:outputText value="#{ped.pedValor}"/></center>
+                                    </p:column>
+                                    <p:column headerText="Status" style="width: 100px;">
+                                        <center><h:outputText value="#{ped.stt.sttDescricao}"/></center>
+                                    </p:column>
+                                    <p:column>
+                                        <center>
+                                            <p:commandLink update="@form" action="#{clienteMb.detalharPedido}" process="@this" oncomplete="dialogPedido.show();" style="width: 26px; height: 26px;">
+                                                <f:setPropertyActionListener target="#{clienteMb.pedido}" value="#{ped}"/>
+                                                <h:graphicImage value="/images/info.png" height="22" width="22"/>
+                                            </p:commandLink>
+                                        </center>
+                                    </p:column>
+                                </p:dataTable>
+                            </center>
+                        </p:panel>
+
+                    </h:panelGrid>
+                    <!-- #####################################################################################################################################################################-->
+                    <!-- # FIM CONTEUDO                              #########################################################################################################################-->
+                    <!-- #####################################################################################################################################################################-->
+
+                    <!-- *****INFORMAÇÃO DO PEDIDO *************************************************************************************************************************-->
+                    <p:dialog id="dialogPedido" position="center" style="position: absolute" widgetVar="dialogPedido" header="Detalhes do Pedido" width="800" hideEffect="explode" showEffect="puff">
+                        <p:panel id="panelPedido">
+                            <p:commandButton value="Verificar entrega" icon="ui-icon-image" rendered="#{clienteMb.pedido.stt.sttDescricao.equalsIgnoreCase(clienteMb.EM_ENTREGA)}"/>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Status" style="font-weight: bold"/>
+                                <h:outputText value="#{clienteMb.pedido.stt.sttDescricao}"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Nome do Cliente:" style="font-weight: bold"/>
+                                <h:outputText value="#{clienteMb.pedido.pss.pssNome} #{clienteMb.pedido.pss.pssSobrenome}"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Total:" style="font-weight: bold"/>
+                                <h:outputText value="R$: #{clienteMb.pedido.pedValor}"/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Endereço de Entrega:" style="font-weight: bold"/>
+                                <h:outputText value="#{clienteMb.pedido.end.lgr.lgrDescricao} Nº:#{clienteMb.pedido.end.endNumero},#{clienteMb.pedido.end.lgr.lgrCep} #{clienteMb.pedido.end.lgr.lgrCidade} "/>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:outputText value="Contatos:" style="font-weight: bold"/>
+                                <h:outputText value="#{clienteMb.contatoString} "/>
+                            </h:panelGrid>
+                            <br/>
+                            <h:panelGrid>
+                                <h:outputText value="Produtos Selecionados:" style="font-weight: bold;"/>
+                                <center>
+                                    <p:dataTable value="#{clienteMb.produtosPedidos}" var="ppd"
+                                                 rows="10" paginator="true" paginatorPosition="bottom">
+                                        <p:column headerText="Produto">
+                                            <h:outputText value="#{ppd.pdt.pdtDescricao}"/>
+                                        </p:column>
+                                        <p:column headerText="Preço">
+                                            <h:outputText value="#{ppd.pdt.pdtValor}"/>
+                                        </p:column>
+                                        <p:column headerText="Qtd">
+                                            <h:outputText value="#{ppd.ppdQuantidade}"/>
+                                        </p:column>
+                                    </p:dataTable>
+                                </center>
+                            </h:panelGrid>
+                        </p:panel>
+                    </p:dialog>
+                    <p:dialog id="dialogContatos" position="center" style="position: absolute" widgetVar="dialogContatos" header="Contato"  width="500" hideEffect="explode" showEffect="puff">
+                        <p:messages id="pesquisaMessagesContatos"/>
+                        <p:panel id="panelContato">
+                            <h:outputText value="Descrição"/>
+                            <h:panelGrid columns="2">
+                                <p:inputMask mask="(99)9999-9999" value="#{clienteMb.cntDescricao}" id="descricaoContato" rendered="#{!clienteMb.telSp}"/>    
+                                <p:inputMask mask="(99)99999-9999" value="#{clienteMb.cntDescricao}" id="descricaoContatoSp" rendered="#{clienteMb.telSp}"/>   
+                                <h:panelGrid columns="2">
+                                    <p:selectBooleanCheckbox value="#{clienteMb.telSp}">
+                                        <p:ajax update="panelContato"/>
+                                    </p:selectBooleanCheckbox>
+                                    <h:outputText value="9º Digito"/>
+                                </h:panelGrid>
+                                <p:watermark for="descricaoContato" value="Insira a descrição do contato"/>
+                            </h:panelGrid>
+                        </p:panel>
+                        <br/>
+                        <center>
+                            <h:panelGrid>
+                                <p:commandButton value="Salvar Contato" icon="ui-icon-plus" update="@this,pesquisaMessagesContatos,dataTableCntContato" 
+                                                 oncomplete="if(args.sucesso == true) { dialogContatos.hide(); }"
+                                                 action="#{clienteMb.adicionarCntList}" process="@this,descricaoContato,descricaoContatoSp" rendered="#{clienteMb.cnt.cntId == null}"/>
+                            </h:panelGrid>
+                        </center>
+                    </p:dialog>
+                    <p:dialog closable="false" id="dialogEnderecos" position="center" style="position: absolute" widgetVar="dialogEnderecos" header="Endereços"  width="900" hideEffect="explode" showEffect="puff">
+                        <p:messages id="pesquisaMessagesEndereco"/>
+                        <p:panel id="panelEndereco">
+                            <h:panelGrid>
+                                <h:outputText value="Cep"/>
+                                <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
+                                    <p:inputMask id="cepEnderecoNovo" mask="99999-999" value="#{clienteMb.endereco.lgr.lgrCep}"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid columns="2">
+                                <h:panelGrid>
+                                    <h:outputText value="Logradouro"/>
+                                    <p:inputText value="#{clienteMb.endereco.lgr.lgrDescricao}" size="60" style="text-transform: uppercase"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Nº"/>
+                                    <p:inputText value="#{clienteMb.endereco.endNumero}" size="7"/>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid columns="3">
+
+                                <h:panelGrid>
+                                    <h:outputText value="Complemento"/>
+                                    <p:inputText value="#{clienteMb.endereco.endComplemento}" size="25" style="text-transform: uppercase"/>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Cidade"/>
+                                    <p:selectOneMenu>
+                                        <f:selectItem itemLabel="São José dos Campos"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                                <h:panelGrid>
+                                    <h:outputText value="Estado"/>
+                                    <p:selectOneMenu>
+                                        <f:selectItem itemLabel="São Paulo"/>
+                                    </p:selectOneMenu>
+                                </h:panelGrid>
+                            </h:panelGrid>
+                            <h:panelGrid>
+                                <h:outputText value="Referência"/>
+                                <p:inputText value="#{clienteMb.endereco.endReferencia}"  size="50" style="text-transform: uppercase"/>
+                            </h:panelGrid>
+                            <center>
+                                <h:panelGrid columns="2">
+                                    <p:commandButton update="@this,pesquisaMessagesEndereco,dataTableEndEndereco" process="@this, dialogEnderecos" 
+                                                     oncomplete="if(args.sucesso == true) { dialogEnderecos.hide(); }"
+                                                     action="#{clienteMb.adicionarEndEndereco}" value="Salvar Endereço" icon="ui-icon-plus"/>
+                                    <p:commandButton value="Fechar" action="#{clienteMb.limparEndereco}" oncomplete="dialogEnderecos.hide();" immediate="true"/>
+                                </h:panelGrid> 
+                            </center>
+                        </p:panel>
+                    </p:dialog>
+                </div>               
                 <div class="rodape">
                     <ui:insert name="rodape">
                         <center>
-                            <br/>
-                            M.T.D.O - Management of Traceble Delivery and Orders © Todos os direitos reservados
+                            <h:outputText value="M.T.D.O - Management of Traceble Delivery and Orders © Todos os direitos reservados" style="font-size: xx-small;padding-top: 10px;"/>
                             <p:ajaxStatus id="ajaxStatusPanel">  
                                 <f:facet name="start">  
                                     <h:graphicImage value="/images/loading.gif" width="25" height="25"/>  

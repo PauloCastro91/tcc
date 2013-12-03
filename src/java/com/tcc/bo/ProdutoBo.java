@@ -4,6 +4,7 @@
  */
 package com.tcc.bo;
 
+import com.tcc.model.CatCategoria;
 import com.tcc.model.PdtProduto;
 import com.tcc.util.HibernateUtil;
 import java.util.ArrayList;
@@ -177,6 +178,28 @@ public class ProdutoBo {
         try {
             session.getTransaction().begin();
             Query q = session.createQuery("Select p from PdtProduto p where p.pdtAtivo = 1");
+            pdtList = q.list();
+            session.getTransaction().commit();
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return pdtList;
+    }
+
+    /**
+     * retorna todos os produtos por categoria
+     *
+     * @param nome
+     * @return
+     */
+    public List<PdtProduto> listarPorCategoria(CatCategoria cat) {
+        Session session = new HibernateUtil().openSession();
+        List<PdtProduto> pdtList = new ArrayList<PdtProduto>();
+        try {
+            session.getTransaction().begin();
+            Query q = session.createQuery("Select p from PdtProduto p where p.pdtAtivo is true and  p.cat.catId = " + cat.getCatId());
             pdtList = q.list();
             session.getTransaction().commit();
         } catch (Exception e) {

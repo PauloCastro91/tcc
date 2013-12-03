@@ -25,7 +25,6 @@ public class LoginMb extends BaseMb implements Serializable {
     private String login;
     private String senha;
     private UsuarioBo usuarioBo = new UsuarioBo();
-    private int tentativas = 0;
     private UsrUsuario usr;
 
     public LoginMb() {
@@ -47,11 +46,10 @@ public class LoginMb extends BaseMb implements Serializable {
             throw new Exception("Senha Bloqueada, favor entrar em contato com o Administrador");
         }
         if (!usr.getUsrSenha().equals(Encripta.criptografaSenha(senha))) {
-            tentativas++;
             throw new Exception("Senha Incorreta");
         }
-        if (tentativas >= 3) {
-            throw new Exception("Senha Bloqueada, favor entrar em contato com o Administrador");
+        if (usr.getTpa() == null || usr.getTpa().getTpaDescricao().equalsIgnoreCase("Cliente")) {
+            throw new Exception("Exclusivo para funcionários");
         }
     }
 
@@ -118,14 +116,6 @@ public class LoginMb extends BaseMb implements Serializable {
 
     public void setSenha(String senha) {
         this.senha = senha;
-    }
-
-    public int getTentativas() {
-        return tentativas;
-    }
-
-    public void setTentativas(int tentativas) {
-        this.tentativas = tentativas;
     }
 
     public UsrUsuario getUsr() {

@@ -112,12 +112,12 @@
                         </p:selectOneMenu>
                     </h:panelGrid>
 
-                        <!-- ************************************************************************************************************************************************************-->
+                    <!-- ************************************************************************************************************************************************************-->
                     <!-- ************************************* BOTOES ***************************************************************************************************************-->
                     <!-- ************************************************************************************************************************************************************-->
                     <h:panelGrid columns="4" id="buttons">
                         <p:commandButton action="#{pedidoMb.comprar}" id="comprar" value="Efetuar Compra" update="panel,buttons,messages" rendered="#{pedidoMb.modo.modoTela == 2}"/>
-                        
+
                         <p:commandButton id="novaCompra" process="@this" action="#{pedidoMb.novaCompra}" value="Nova Compra" update="panel,buttons,messages" rendered="#{pedidoMb.modo.modoTela == 1}"/>
                         <p:commandButton value="Cancelar" immediate="true" actionListener="#{pedidoMb.cancelar}" update="@form"/>
                     </h:panelGrid>
@@ -145,6 +145,7 @@
                                         <f:facet name="header">
                                             <p:commandLink action="#{pedidoMb.carregarListasPessoa}" update="@form" value="#{pss.pssNome.toUpperCase()} #{pss.pssSobrenome.toUpperCase()}" process="@this">
                                                 <f:setPropertyActionListener value="#{pss}" target="#{pedidoMb.pss}"/>
+                                                <f:setPropertyActionListener value="2" target="#{pedidoMb.modo.modoTela}"/>
                                             </p:commandLink>
                                         </f:facet>
                                         <h:panelGrid columns="2">  

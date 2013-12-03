@@ -18,6 +18,11 @@ public class CoordenadasGps implements Serializable{
     private String latitude;
     private String longitude;
 
+    public CoordenadasGps(String lat, String lng) {
+        this.latitude = lat;
+        this.longitude = lng;
+    }
+
     public Integer getId() {
         return id;
     }

@@ -7,6 +7,7 @@ package com.tcc.bo;
 import com.tcc.model.EndEndereco;
 import com.tcc.model.PedPedido;
 import com.tcc.model.PpdProdutoPedido;
+import com.tcc.model.PssPessoa;
 import com.tcc.model.SttStatus;
 import com.tcc.util.HibernateUtil;
 import java.text.SimpleDateFormat;
@@ -69,6 +70,7 @@ public class PedidoBo {
     public void salvarProdutoPedidoEmLote(List<PpdProdutoPedido> ppdList) {
         int x = 0;
         Session session = new HibernateUtil().openSession();
+        session.getTransaction().begin();
         try {
             for (PpdProdutoPedido ppd : ppdList) {
                 session.save(ppd);
@@ -80,6 +82,7 @@ public class PedidoBo {
         } catch (Exception e) {
             session.getTransaction().rollback();
         } finally {
+            session.getTransaction().commit();
             session.close();
         }
     }
@@ -161,6 +164,24 @@ public class PedidoBo {
             q.setParameter("dia", Integer.parseInt(formatDia.format(dia)));
             q.setParameter("mes", Integer.parseInt(formatMes.format(dia)));
             q.setParameter("ano", Integer.parseInt(formatAno.format(dia)));
+            List<PedPedido> lista = q.list();
+            if (lista != null && !lista.isEmpty()) {
+                retorno = lista;
+            }
+        } catch (Exception e) {
+            session.getTransaction().rollback();
+        } finally {
+            session.close();
+        }
+        return retorno;
+    }
+
+    public List<PedPedido> listarPorPessoa(PssPessoa pessoa) {
+        List<PedPedido> retorno = new ArrayList<PedPedido>();
+        Session session = new HibernateUtil().openSession();
+        try {
+            Query q = session.createQuery("Select p from PedPedido p where p.pss.pssId = :pssId");
+            q.setParameter("pssId", pessoa.getPssId());
             List<PedPedido> lista = q.list();
             if (lista != null && !lista.isEmpty()) {
                 retorno = lista;

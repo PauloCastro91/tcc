@@ -205,4 +205,13 @@ public class PedPedido implements Serializable {
         }
         return "PedPedido{" + "pedId=" + pedId + ", pss=" + pssIdString + ", fun=" + funId + ", end=" + endId + ", pedValor=" + pedValor + ", produtosPedido=" + produtosPedidoString + ", pedDataCadastro=" + data + ", pedDataAlteracao=" + dataAlt + "}'";
     }
+    
+    public String getDataCadastroString(){
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+        if(pedDataCadastro!=null){
+            return df.format(pedDataCadastro);
+        }else{
+            return "";
+        }
+    }
 }

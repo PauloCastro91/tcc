@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+To change this template, choose Tools | Templates
+and open the template in the editor.
+-->
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:h="http://java.sun.com/jsf/html"
+      xmlns:f="http://java.sun.com/jsf/core"
+      xmlns:ui="http://java.sun.com/jsf/facelets"
+      xmlns:p="http://primefaces.org/ui">
+
+    <ui:composition template="/index.xhtml">
+        <ui:define name="conteudo">
+            <h:form id="formLocaliza">
+
+                <p:messages id="messages" /> 
+                <p:panel id="panel" header="Localizar Funcionários" style="width: 990px;">
+                    <p:gmap center="-23.207873317555364,-45.87289810180664" zoom="13" type="HYBRID" model="#{mapBean.advancedModel}" style="width:950px;height:400px">  
+                        <p:ajax event="overlaySelect" listener="#{mapBean.onMarkerSelect}" />  
+                        <p:gmapInfoWindow>  
+                            <h:outputText value="#{mapBean.marker.title}" />  
+                        </p:gmapInfoWindow>  
+                    </p:gmap>
+                </p:panel>
+            </h:form>
+        </ui:define>
+    </ui:composition>
+</html>

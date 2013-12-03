@@ -14,6 +14,7 @@
         <title>M.T.D.O - Management of Traceble Delivery and Orders</title>
         <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/primefaces_lang.js"></script>
         <script type="text/javascript" src="#{facesContext.externalContext.request.contextPath}/resources/js/util.js"></script>
+        <script type="text/javascript" src="https://maps.googleapis.com/maps/api/js?sensor=false"></script>
         <ui:insert name="javascript"><!-- user javascript inclusion --></ui:insert>
     </h:head>
     <h:body>
@@ -48,12 +49,12 @@
                                     <p:menuitem value="Status dos Pedidos" action="statusPedido.xhtml"/>
                                 </p:submenu>
                                 <p:submenu label="LOCALIZAÇÃO DE FUNCIONÁRIOS">  
-                                    <p:menuitem value="Localizar Funcionário" action="pagina404.xhtml"/>
+                                    <p:menuitem value="Localizar Funcionário" action="localiza.xhtml"/>
                                 </p:submenu>
                                 <f:facet name="options"> 
                                     <h:panelGrid columns="2" cellpadding="0" cellspacing="0">
                                         <h:outputText value="#{loginMb.usr.usrLogin}" style="font-size: x-small"/>  
-                                        <p:commandButton action="#{loginMb.deslogar}"  ajax="false" process="@this" immediate="true" value="Logout" style="height: 26px;"/>  
+                                        <p:commandButton action="#{loginMb.deslogar}"  ajax="false" process="@this" immediate="true" value="Sair" style="height: 26px;"/>  
                                     </h:panelGrid>
                                 </f:facet>  
                             </p:menubar>
@@ -66,7 +67,7 @@
                     <div class="conteudo">
                         <ui:insert name="conteudo">
                             <p:panel style="min-height: 380px;">
-                                 
+
                             </p:panel>
                         </ui:insert>
                     </div>

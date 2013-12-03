@@ -14,7 +14,7 @@ body {
 }
 .rMenu {
     width:15%;
-    min-height:400px;
+    min-height:440px;
     float:left;
     margin-left:1%;
     border-width: 3px;
@@ -25,11 +25,10 @@ body {
     padding-left: 8px;
 }
 .corpo {
-    padding-top:30px;
     width:80%;
     margin-left:1%;
     margin-right: 1%;
-    min-height:380px;
+    min-height:450px;
     float:left;
     border-radius: 1.5em;
     background-color:#FFF;
@@ -38,7 +37,7 @@ body {
 
 .rodape {
     clear:both;
-    height:100px;
+    padding-top: 10px;
 }
 .tEsquerda {
     float:left;

@@ -8,6 +8,8 @@ package com.tcc.filter;
  *
  * @author paulo
  */
+import java.util.ArrayList;
+import java.util.List;
 import javax.faces.application.NavigationHandler;
 import javax.faces.context.FacesContext;
 import javax.faces.event.PhaseEvent;
@@ -21,16 +23,26 @@ public class AuthorizationListener implements PhaseListener {
     public void afterPhase(PhaseEvent event) {
 
         FacesContext facesContext = event.getFacesContext();
-        String currentPage = facesContext.getViewRoot().getViewId();
-
-        boolean isLoginPage = ((currentPage.lastIndexOf("login.xhtml")) > -1);
-        boolean forgetPasswordPage = ((currentPage.lastIndexOf("esqueciSenha.xhtml")) > -1);
-        HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
-        Object currentUser = session.getAttribute("currentUser");
-
-        if (!isLoginPage && !forgetPasswordPage && currentUser == null) {
-            NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
-            nh.handleNavigation(facesContext, null, "loginPage");
+        String paginaAtual = facesContext.getViewRoot().getViewId();
+        List<String> pagPermitidas = new ArrayList<String>();
+        pagPermitidas.add("login.xhtml");
+        pagPermitidas.add("esqueciSenha.xhtml");
+        pagPermitidas.add("mtdo.xhtml");
+        pagPermitidas.add("cssLayoutCliente.css");
+        boolean permitidoAcesso = false;
+        for (String telaPermitida : pagPermitidas) {
+            if (paginaAtual.endsWith(telaPermitida)) {
+                permitidoAcesso = true;
+                break;
+            }
+        }
+         if (!permitidoAcesso) {
+            HttpSession session = (HttpSession) facesContext.getExternalContext().getSession(true);
+            Object currentUser = session.getAttribute("currentUser");
+            if (currentUser == null) {
+                NavigationHandler nh = facesContext.getApplication().getNavigationHandler();
+                nh.handleNavigation(facesContext, null, "loginPage");
+            }
         }
     }
 
